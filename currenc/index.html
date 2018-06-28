@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PWA Currency Converter</title>
+
+    <meta name="description" content="Currency Converter project submitted in the ALC #7DaysofCodeChallenge.">
+    <meta name="author" content="BlueMatrix">
+
+    <link href="https://fonts.googleapis.com/css?family=Encode+Sans+Condensed:100|Source+Sans+Pro:200" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="manifest" href="./manifest.json">
+</head>
+<body>
+<div class="app app__layout">
+    <header>
+        <span class="header__title no__select">Currency Converter</span>
+    </header>
+
+    <div class="app__content">
+        <div id="exchange-main-container">
+            <div id="exchange-main-description" class="valor valor-big">1 Euro = $  1,16 Dollars</div>
+        </div>
+
+        <div class="loader">
+
+        </div>
+
+        <!-- Toast msg's  -->
+        <div class="toast__container"></div>
+    </div>
+</div>
+
+<script src="./js/app.js"></script>
+<script src="./js/toast.js"></script>
+<script src="./js/offline.js"></script>
+<script src="//github.com/jakearchibald/idb/blob/master/lib/idb.js"></script>
+</body>
+</html>
