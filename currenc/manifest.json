@@ -6,7 +6,7 @@
   "display": "standalone",
   "orientation": "portrait",
   "manifest_version": 1,
-  "background_color": "#c54b0f",
+  "background_color": "#ffa5a6",
   "theme_color": "#c54b0f",
   "icons": [
     {
