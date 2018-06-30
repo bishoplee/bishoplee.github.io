@@ -44,7 +44,7 @@ body {
 
 #exchange-main-container {display:flex;flex-direction:column;height:100%;}
 #base-currency-wrapper {background:#FF5354;height:50%;}
-#converted-currency-wrapper {background:#ffe;height:50%;}
+#converted-currency-wrapper {background:#f9e0e1;height:50%;}
 
 header {
     position:fixed;
