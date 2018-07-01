@@ -44,7 +44,7 @@ body {
 
 #exchange-main-container {display:flex;flex-direction:column;height:100%;}
 #base-currency-wrapper {background:#FF5354;height:50%;}
-#converted-currency-wrapper {background:#f9e0e1;height:50%;}
+#converted-currency-wrapper {background:#fcf9fa;height:50%;}
 
 header {
     position:fixed;
@@ -274,4 +274,8 @@ button:disabled {
 .custom__input:checked + .custom__checkbox::before {
     left: 25px;
     background: #0288d1;
+}
+
+@media screen and (max-width: 768px) {
+    .header__title {font-size:20px;}
 }

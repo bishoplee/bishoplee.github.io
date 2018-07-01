@@ -3,6 +3,8 @@ const cacheName = 'pwa-currenc-v1.0';
 const filesToCache = [
     './',
     './css/style.css',
+    './images/',
+    './js/idb.js',
     './js/app.js',
     './js/offline.js',
     './js/toast.js'
@@ -40,10 +42,9 @@ self.addEventListener('activate', event => {
     return self.clients.claim();
 });
 
+// Fired for fetch requests, [hijacking]
 self.addEventListener('fetch', event => {
-    //alert(event);
     console.log('Service Worker: Fetch', event.request.url);
-    console.log("Url", event.request.url);
 
     event.respondWith(
         caches.match(event.request).then(response => {
