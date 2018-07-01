@@ -2,7 +2,7 @@
   "name": "PWA - Currency Converter",
   "short_name": "CurrenC",
   "description": "Progressive Web Apps for a simple currency converter",
-  "start_url": "./index.html?utm=homescreen",
+  "start_url": "index.html",
   "display": "standalone",
   "orientation": "portrait",
   "manifest_version": 1,
