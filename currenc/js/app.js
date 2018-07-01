@@ -15,22 +15,34 @@
             }).catch(error => console.error(`Unable to register Service Worker. Error is ${error}`));
     }
 
-    //let convertCurrencyFrom = document.getElementById('base-currency').value;
-    //let convertCurrencyTo = document.getElementById('converted-currency');
+    const list = document.querySelector('#currencies-list ul');
 
-    const idbPromise = idb.open('currenc', 1, function(upgradeDb) {
+    let convertCurrencyFrom = document.getElementById('convertFrom');
+
+    let convertCurrencyTo = document.getElementById('convertedTo');
+
+    const idbName = "currenc";
+
+    const idbPromise = idb.open(idbName, 1, function(upgradeDB) {
         console.log("Making a new object store to hold currencies list of all countries.");
-        if (!upgradeDb.objectStoreNames.contains('currencyConverter')) {
+        if (!upgradeDB.objectStoreNames.contains('currencyConverter')) {
             // const currencyConverterStore =
-            upgradeDb.createObjectStore('currencyConverter');
+            upgradeDB.createObjectStore('currencyConverter');
         }
     });
 
     // Methods
     function init(){
-        apiFetchCurrenciesList();
-        customEventListeners();
+        // Check if `currencies` object already exists in DB
+        fetchValuefromIDB('currencies').then(currencies => {
+            if (typeof currencies === 'undefined') {
+                apiFetchCurrenciesList();
+            }else{
+                addCurrencyListtoDOM(currencies);
+            }
+        });
 
+        customEventListeners();
     }
 
     function customEventListeners() {
@@ -45,18 +57,23 @@
         })
             .then(response => response.json())
             .then(data => {
-                const currencies = Object.keys(data.results).sort();
+                const currencies = Object.values(data.results).sort();
 
                 // Save currency list to IndexedDB for offline access
                 saveCurrenciesListtoIDB('currencies', currencies);
-                })
+
+                //console.log(currencies);
+
+                addCurrencyListtoDOM(currencies);
+            })
             .catch(error => {
                 console.error(
                     `The following error occurred while fetching the list of currencies. ${error}`,
                 );
-                getValuefromIDB('currencies').then(currencies => {
+                fetchValuefromIDB('currencies').then(currencies => {
                     if (typeof currencies === 'undefined') return;
-                    console.log(currencies);
+                    //console.log(currencies);
+                    addCurrencyListtoDOM(currencies);
                 });
             });
     }
@@ -65,23 +82,23 @@
         return idbPromise
             .then(db => {
                 const transaction = db.transaction('currencyConverter', 'readwrite');
-                const store = transaction.objectStore('currencyConverter');
+                const objectStore = transaction.objectStore('currencyConverter');
 
-                store.put(value, key);
+                objectStore.put(value, key);
             })
             .catch(error => {
                 console.error('Error saving data to database', error);
             });
     }
 
-    function getValuefromIDB(key) {
+    function fetchValuefromIDB(key) {
         return idbPromise
             .then(db => {
                 if (!db) return;
                 const transaction = db.transaction('currencyConverter');
-                const store = transaction.objectStore('currencyConverter');
+                const objectStore = transaction.objectStore('currencyConverter');
 
-                return store.get(key);
+                return objectStore.get(key);
             })
             .catch(error => {
                 console.error('Error getting data from database', error);
@@ -92,13 +109,34 @@
         return idbPromise
             .then(db => {
                 const transaction = db.transaction('currencyConverter', 'readwrite');
-                const store = transaction.objectStore('currencyConverter');
+                const objectStore = transaction.objectStore('currencyConverter');
 
-                store.put(value, key);
+                // value.forEach(currency => store.put(currency, key));
+                objectStore.put(value, key);
             })
             .catch(err => {
                 console.error('error saving data to database', err);
             });
+    }
+
+    function addCurrencyListtoDOM(currencies) {
+        for(let currency in currencies) {
+            const currencyName = currencies[currency].currencyName;
+            const currencySymbol = currencies[currency].currencySymbol;
+            const currencyID = currencies[currency].id;
+            const li = document.createElement("li");
+
+            li.className = "currency__list";
+            li.id = currencyID;
+
+            const a = document.createElement("a");
+            a.dataset.currencySymbol = currencySymbol;
+            a.innerHTML = `${currencyName} <span>${currencyID}</span>`;
+
+            li.appendChild(a);
+
+            list.appendChild(li);
+        }
     }
 
     // initialize app

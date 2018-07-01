@@ -1,3 +1,30 @@
+/* latin */
+@font-face {
+    font-family: 'Source Sans Pro';
+    font-style: normal;
+    font-weight: 200;
+    src: local('Source Sans Pro Light'), local('SourceSansPro-Light'), url(./fonts/Source_Sans_Pro/SourceSansPro-Light.ttf) format('truetype');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* latin */
+@font-face {
+    font-family: 'Encode Sans Condensed';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Encode Sans Condensed Regular'), local('EncodeSansCondensed-Regular'), url(./fonts/Encode_Sans_Condensed/EncodeSansCondensed-Regular.ttf) format('truetype');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* latin */
+@font-face {
+    font-family: 'Encode Sans Condensed';
+    font-style: normal;
+    font-weight: 200;
+    src: local('Encode Sans Condensed ExtraLight'), local('EncodeSansCondensed-ExtraLight'), url(./fonts/Encode_Sans_Condensed/EncodeSansCondensed-ExtraLight.ttf) format('truetype');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 *,
 *::after,
 *::before {
@@ -31,7 +58,7 @@ h3 {text-align: left;margin-top: 20px;margin-bottom: 30px;font-weight: 500;}
 
 /* main styles */
 body {
-    font-family: 'Encode Sans Condensed', Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Encode Sans Condensed', 'Source Sans Pro', Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size:1rem;
     -webkit-font-smoothing: antialiased;
     -webkit-text-size-adjust: 100%;
@@ -43,7 +70,7 @@ body {
 .app__layout {width: 100%;height: calc(100vh - 56px);}
 
 #exchange-main-container {display:flex;flex-direction:column;height:100%;}
-#base-currency-wrapper {background:#FF5354;height:50%;}
+#base-currency-wrapper {background:#FF5354;height:50%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;}
 #converted-currency-wrapper {background:#fcf9fa;height:50%;}
 
 header {
@@ -59,6 +86,20 @@ header {
     transition: background-color 250ms linear;
 }
 
+#currencies-list {position:absolute;z-index:200;top:-56px;bottom:0;left:0;right:0;background:#fcfafa;overflow-y:scroll;transform:translateX(-105%);}
+#currencies-list .header {height:56px;margin-bottom:24px;}
+#currencies-list .header span {height:48px;width:48px;position:relative;margin:4px;display:block;cursor:pointer;}
+#currencies-list .header span::before {content:"";position:absolute;width:24px;height:1px;border-bottom:2px solid #ff5354;top:50%;left:50%;transform:translateX(-50%);}
+#currencies-list .header span::after {content:"";position:absolute;width:12px;height:12px;border-left:2px solid #ff5354;border-bottom:2px solid #ff5354;transform:rotate(45deg) translateX(190%) translateY(30%);}
+#currencies-list ul.currencies {display:block;text-align:left;padding:16px;}
+#currencies-list ul.currencies li {padding:8px;border-bottom:1px solid #f9e0e1;position:relative;}
+#currencies-list ul.currencies li.active::after {position:absolute;content:"";width:24px;height:8px;border:none;border-bottom:2px solid #ff5354;border-left:2px solid #ff5354;transform:rotate(-45deg);top:35%;right:16px;}
+#currencies-list ul.currencies li a {display:block;color:#ff5354;cursor:pointer;}
+#currencies-list ul.currencies li a span {font-family:'Source Sans Pro';font-size:14px;letter-spacing:1px;color:#ffa5a6;margin-left:8px;font-weight:100;}
+
+.base__currency {text-align:center;}
+.base__currency input {font-size:80px;width:50%;padding: 0 0 16px;text-align:center;background:transparent;border:unset;border-bottom:1px solid #fff;outline:none;color:#FCF9FA;font-family:Encode Sans Condensed;font-weight:100;}
+.base__currency__name {height:48px;margin:16px 0;color:#f9e0e1;line-height:48px;}
 .app__offline {
     background-color:#464a4c;/* #1ab8ef;*/
 }
@@ -68,10 +109,6 @@ header {
 .green : #8ac249
 .amber : #fec006
 .red : #e81d62}*/
-
-.container h4 {
-    font-family: Consolas, "courier new";
-}
 
 .header__icon {
     width: 48px;
@@ -96,8 +133,7 @@ header {
 
 .header__title {
     color: #fff;
-    font-family: 'Source Sans Pro';
-    font-weight: 600;
+    font-family:'Source Sans Pro';
     letter-spacing: 2px;
     font-size: 24px;
     align-self: center;
@@ -277,5 +313,5 @@ button:disabled {
 }
 
 @media screen and (max-width: 768px) {
-    .header__title {font-size:20px;}
+    .header__title {font-size:20px;transform:translateX(25%);}
 }

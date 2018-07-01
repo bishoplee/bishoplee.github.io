@@ -12,7 +12,8 @@
     <meta name="theme-color" content="#ff5354">
 
     <link rel="shortcut icon" href="images/currenc-icon-48x48.png">
-    <link href="https://fonts.googleapis.com/css?family=Encode+Sans+Condensed:100|Source+Sans+Pro:200" rel="stylesheet">
+    <!--<link href="https://fonts.googleapis.com/css?family=Encode+Sans+Condensed:100|Source+Sans+Pro:200" rel="stylesheet">-->
+    <link href="https://fonts.googleapis.com/css?family=Encode+Sans+Condensed:200,400|Source+Sans+Pro" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <link rel="manifest" href="./manifest.json">
 </head>
@@ -29,24 +30,26 @@
         <div id="exchange-main-container">
             <!--<div id="exchange-main-description" class="valor valor-big">1 Euro = $  1,16 Dollars</div>-->
             <div id="base-currency-wrapper">
-                <div class="base__currency"></div>
+                <div class="base__currency">
+                    <div class="base__currency__name">US Dollars</div>
+                    <input type="text" id="convertFrom">
+                </div>
             </div>
             <div id="converted-currency-wrapper">
-                <div class="converted__currency"></div>
+                <div class="converted__currency">
+                    <span id="convertedTo"></span>
+                </div>
             </div>
         </div>
 
-        <div id="convert-currency-from-list">
-            <div class="header"></div>
-            <ul class="from__list"></ul>
+        <div id="currencies-list">
+            <div class="header">
+                <span class="back__button"></span>
+            </div>
+            <ul class="currencies"></ul>
         </div>
 
-        <div id="convert-currency-to-list">
-            <div class="header"></div>
-            <ul class="to__list"></ul>
-        </div>
-
-        <div id="keypad" class="absolute"></div>
+        <!--<div id="keypad" class="absolute"></div>-->
 
         <div class="loader">
         </div>

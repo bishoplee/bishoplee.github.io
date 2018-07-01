@@ -3,6 +3,7 @@ const cacheName = 'pwa-currenc-v1.0';
 const filesToCache = [
     './',
     './css/style.css',
+    './css/fonts/',
     './images/',
     './js/idb.js',
     './js/app.js',
