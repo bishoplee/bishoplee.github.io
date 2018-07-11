@@ -51,11 +51,25 @@ self.addEventListener('activate', event => {
 
 // Fired for fetch requests, [hijacking]
 self.addEventListener('fetch', event => {
-    console.log('Service Worker: Fetch', event.request.url);
+    const requestUrl = new URL(event.request.url);
+
+    if (requestUrl.origin === location.origin) {
+        if (requestUrl.pathname === './') {
+            event.respondWith(caches.match('./'));
+            return;
+        }
+    }
+    //console.log('Service Worker: Fetch', event.request.url);
 
     event.respondWith(
         caches.match(event.request).then(response => {
-            return response || fetch(event.request).then();
+            return response || fetch(event.request);
         })
     );
+});
+
+self.addEventListener('message', function(event) {
+    if (event.data.action === 'skipWaiting') {
+        self.skipWaiting();
+    }
 });

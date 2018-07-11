@@ -463,11 +463,14 @@
 //  TODO: [6] log the most frequently converted currencies
 //  TODO: [7] add refresh button to override [4] and [5]
 // ... done  TODO: [8] catch field value to remove decimal points not to exceed one
-// ... done  TODO: [9] add delete button functionality
+//  TODO: [9] add delete button functionality
 // ... done  TODO: [10] add vibration plugin on key press/tap
 // ... done  TODO: [11] catch key press to exempt non-numeric values
 // ... done  TODO: [12] disable double trigger on convert button
 //  TODO: [13] add search to currency list to filter list by value entered
+//  TODO: [14] load default conversion rate for preselected currencies
+//  TODO: [15] add switch for currency name and rate
+//  TODO: [16] keep track of conversion history
 
 //COMMENTS: once app loads, check if there are data in IDB,
 // if yes, display data, then fetch fresh data from API and update DOM, then save fresh data to IDB
