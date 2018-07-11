@@ -43,11 +43,6 @@
       "src": "./images/currenc-icon-72x72.png",
       "type": "image/png",
       "sizes": "72x72"
-    },
-    {
-      "src": "./images/currenc-icon-48x48.png",
-      "type": "image/png",
-      "sizes": "48x48"
     }
   ],
   "author": {

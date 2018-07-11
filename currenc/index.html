@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,9 +9,26 @@
 
     <meta name="description" content="Currency Converter project submitted in the ALC #7DaysofCodeChallenge.">
     <meta name="author" content="BlueMatrix">
-    <meta name="theme-color" content="#ff5354">
+    <meta name="theme-color" content="#cf4647">
 
-    <link rel="shortcut icon" href="images/currenc-icon-48x48.png">
+    <link rel="shortcut icon" href="images/currenc-icon-72x72.png">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="PWA Currency Converter">
+
+    <link rel="apple-touch-startup-image" href="images/currenc-icon-48x48.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="images/currenc-icon-72x72.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="images/currenc-icon-96x96.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="images/currenc-icon-144x144.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="images/currenc-icon-168x168.png" media="(min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="images/currenc-icon-192x192.png" media="(min-device-width: 834px) and (max-device-width: 834px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="images/currenc-icon-256x256.png" media="(min-device-width: 1024px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait)">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="images/currenc-icon-512x512.png">
+
+    <meta name="msapplication-TileColor" content="#cf4647">
+
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <link rel="manifest" href="./manifest.json">
 </head>
@@ -27,16 +44,20 @@
     <div class="app__content">
         <div id="exchange-main-container">
             <div id="base-currency-wrapper">
-                <div class="base__currency">
-                    <div class="base__currency__name" id="USD">US Dollars</div>
-                    <input type="number" id="convert-from" name="convert-from" value="1">
+                <div class="base__currency relative">
+                    <div class="base__currency__name" id="USD">United States Dollar </div>
+                    <div id="input-wrapper" class="relative">
+                        <input type="text" id="convert-from" name="convert-from" value="1" class="pointer">
+                        <label class="absolute" for="convert-from">$</label>
+                    </div>
                 </div>
             </div>
 
             <div id="converted-currency-wrapper">
-                <div class="converted__currency">
+                <div class="converted__currency relative">
                     <span id="converted-to"></span>
-                    <div class="converted__currency__name" id="NGN">NG Naira</div>
+                    <span id="conversion-info"></span>
+                    <div class="converted__currency__name" id="NGN">Nigerian Naira</div>
                 </div>
             </div>
         </div>
@@ -44,6 +65,7 @@
         <div id="currencies-list">
             <div class="header">
                 <span class="back__button"></span>
+                <span class="search__button"></span>
             </div>
             <ul class="currencies"></ul>
         </div>
@@ -52,11 +74,29 @@
             <span></span>
         </div>
 
-        <div id="keypad" class="absolute">
-
+        <div id="keypad" class="absolute animated">
+            <ul class="number__keypad">
+                <li class="key"><a data-value="1">1</a></li>
+                <li class="key"><a data-value="2">2</a></li>
+                <li class="key"><a data-value="3">3</a></li>
+                <li class="key"><a data-value="4">4</a></li>
+                <li class="key"><a data-value="5">5</a></li>
+                <li class="key"><a data-value="6">6</a></li>
+                <li class="key"><a data-value="7">7</a></li>
+                <li class="key"><a data-value="8">8</a></li>
+                <li class="key"><a data-value="9">9</a></li>
+                <li class="key"><a data-value=".">.</a></li>
+                <li class="key"><a data-value="0">0</a></li>
+                <li class="key"><a data-value="convert"><span></span></a></li>
+            </ul>
         </div>
 
-        <div class="loader">
+        <div class="loader absolute">
+            <div class="ball-scale-multiple">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
         </div>
 
         <!-- Toast msg's  -->

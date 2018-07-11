@@ -2,6 +2,7 @@ const cacheName = 'pwa-currenc-v1.0';
 
 const filesToCache = [
     './',
+    './index.html',
     './css/style.css',
     './css/fonts/Source_Sans_Pro/SourceSansPro-Light.ttf',
     './css/fonts/Encode_Sans_Condensed/EncodeSansCondensed-Regular.ttf',
@@ -54,7 +55,7 @@ self.addEventListener('fetch', event => {
 
     event.respondWith(
         caches.match(event.request).then(response => {
-            return response || fetch(event.request);
+            return response || fetch(event.request).then();
         })
     );
 });
