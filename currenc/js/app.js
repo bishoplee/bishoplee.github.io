@@ -135,7 +135,6 @@
 
         // detect if 'enter' key is pressed
         body.addEventListener('keydown', event => {
-            //console.log(event);
             if (event.keyCode === 13) {
                 // restore keypad to default state
                 keypad.classList.remove('slideInUp');
@@ -223,7 +222,12 @@
             // add vibration on key press for mobile
             navigator.vibrate(50);
             
-            // disable decimal point key 
+            // disable input focus when convert button is clicked
+            if(event.target.childNodes["0"].dataset.value === 'convert'){
+                return;
+            }
+
+            // disable decimal point key
             if(event.target.childNodes["0"].dataset.value === '.'){
                 event.target.classList.add('disabled');
                 decimalTrigger = event.target;
@@ -241,14 +245,11 @@
 
             // check if new value contains decimal point when value is being deleted
             if(event.target.childNodes["0"].dataset.value === 'delete' && decimalTrigger !== ''){
-                //console.log(decimalTrigger);
-                //if(decimalTrigger === '') return;
                 if(newValue.indexOf('.') === -1){
                     decimalTrigger.classList.remove('disabled');
                 }
             }
-            //console.log(newValue.indexOf('.'));
-       
+
             inputField.value = newValue;
             inputField.focus();
             changeFontSize(inputField);
