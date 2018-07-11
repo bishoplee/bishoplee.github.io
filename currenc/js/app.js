@@ -46,9 +46,15 @@
     };
 
     const changeFontSize = function(el) {
-        const divider = el.value.length > 4 ? (el.value.length < 4 ? false : el.value.length) : false; //get input value
-        let fontSize = 80 - divider * 3; //alter font size depending on string length
-        el.style.fontSize = fontSize + "px"; //set font size
+        //switch ()
+        if (el.value.length > 12) {
+            navigator.vibrate(50);
+            toast('Maximum number of digits (12) exceeded');
+        } else {
+            const divider = el.value.length > 4 ? (el.value.length < 4 ? false : el.value.length) : false; //get input value
+            let fontSize = 80 - divider * 3; //alter font size depending on string length
+            el.style.fontSize = fontSize < 30 ? `30px` : fontSize + "px"; //set font size
+        }
     };
 
     const toTitleCase = function(str) {
@@ -163,7 +169,7 @@
             __this = this;
         });
 
-        // add listener for click on selected currency
+        // add listener for click on currency name
         currencies.addEventListener('click', event => {
             if (event.target.classList.contains('currency__list')) {
                 const currencyName = event.target.childNodes["0"].childNodes["0"].textContent;
