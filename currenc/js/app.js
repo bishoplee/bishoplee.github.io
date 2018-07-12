@@ -424,9 +424,9 @@
                     fetchValuefromIDB(currencyExchange).then(data => {
                         if (typeof data === 'undefined') return;  // display a message to let user know the app is offline
 
-                        convertedCurrency = amounttoConvert * exchangeRates;
+                        convertedCurrency = amounttoConvert * data;
                         convertCurrencyToField.innerText = convertedCurrency.toFixed(2);
-                        info.innerText = `1 ${baseCurrency} = ${targetCurrency} ${exchangeRates}`;
+                        info.innerText = `1 ${baseCurrency} = ${targetCurrency} ${data}`;
 
                         loader.classList.remove('show');
                         button.classList.remove('disabled');
