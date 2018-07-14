@@ -29,16 +29,17 @@
     const converted = document.querySelector('.converted__currency__name');
     const currencies = document.querySelector('.currencies');
     const backButton = document.querySelector('.back__button');
-    const numberKeys = document.querySelector('.number__keypad');
+    const numberKeyPad = document.querySelector('.number__keypad');
     const convertCurrencyToField = document.getElementById('converted-to');
     const keypad = document.getElementById('keypad');
     const inputField = document.getElementById('convert-from');
     const inputWrapper = document.getElementById('input-wrapper');
-    const button = document.getElementById('convert-button');
-    const info = document.getElementById('conversion-info');
+    const convertTrigger = document.getElementById('do-conversion');
+    const convertInfo = document.getElementById('conversion-info');
+    const baseCurrencyWrapper = document.getElementById('base-currency-wrapper');
 
-    const hideKeyboard = function(el) {
-        el.setAttribute('readonly', 'readonly');//removeAttribute
+    const hideNativeKeyboard = function(el) {
+        el.setAttribute('readonly', 'readonly');
         setTimeout(function() {
             el.blur();
             el.removeAttribute('readonly');
@@ -46,15 +47,9 @@
     };
 
     const changeFontSize = function(el) {
-        //switch ()
-        if (el.value.length > 12) {
-            navigator.vibrate(50);
-            toast('Maximum number of digits (12) exceeded');
-        } else {
-            const divider = el.value.length > 4 ? (el.value.length < 4 ? false : el.value.length) : false; //get input value
-            let fontSize = 80 - divider * 3; //alter font size depending on string length
-            el.style.fontSize = fontSize < 30 ? `30px` : fontSize + "px"; //set font size
-        }
+        const divider = el.value.length > 4 ? (el.value.length < 4 ? false : el.value.length) : false; //get input value
+        let fontSize = 80 - divider * 3; //alter font size depending on string length
+        el.style.fontSize = fontSize < 30 ? `30px` : fontSize + "px"; //set font size
     };
 
     const toTitleCase = function(str) {
@@ -118,11 +113,8 @@
     }
 
     function customEventListeners() {
-        // add listener for click on the convert-button
-        button.addEventListener('click', () => {
-            //disable double click on button
-            //button.classList.add('disabled');
-
+        // add listener for click on the `do-conversion` key
+        convertTrigger.addEventListener('click', () => {
             //hide keypad
             keypad.classList.remove('slideInUp');
 
@@ -135,7 +127,7 @@
             // restore input to original position
             inputWrapper.classList.remove('moveUp');
 
-            //do the calculation
+            //do the conversion calculation
             calculateExchangeRate();
         });
 
@@ -194,13 +186,6 @@
             document.getElementById('currencies-list').classList.remove('open');
         });
 
-        // add listener for focus on input field
-        inputField.addEventListener('focus', () => {
-            hideKeyboard(inputField);
-            inputWrapper.classList.add('moveUp');
-            keypad.classList.add('slideInUp');
-        });
-
         // allow numbers and decimal point only, applicable to desktop
         inputField.addEventListener('keydown', function(e) {
             const key = e.keyCode ? e.keyCode : e.which;
@@ -224,7 +209,7 @@
         });
 
         // add listener for click on keypad keys
-        numberKeys.addEventListener('click', event => {
+        numberKeyPad.addEventListener('click', event => {
             // add vibration on key press for mobile
             navigator.vibrate(50);
             
@@ -233,32 +218,45 @@
                 return;
             }
 
-            // disable decimal point key
-            if(event.target.childNodes["0"].dataset.value === '.'){
-                event.target.classList.add('disabled');
-                decimalTrigger = event.target;
-            }
-
             // retrieve current input value
             const currentValue = inputField.value;
 
-            if(currentValue.length >= 4){
-                //inputField.style.fontSize =
-            }
-
-            // construct new value to be added to DOM
-            const newValue = event.target.childNodes["0"].dataset.value === 'delete' ? currentValue.slice(0, -1) : currentValue + event.target.childNodes["0"].dataset.value;
-
-            // check if new value contains decimal point when value is being deleted
-            if(event.target.childNodes["0"].dataset.value === 'delete' && decimalTrigger !== ''){
-                if(newValue.indexOf('.') === -1){
-                    decimalTrigger.classList.remove('disabled');
+            if(currentValue.length > 10){
+                navigator.vibrate(100);
+                toast("Maximum number of digits (10) exceeded");
+            } else {
+                // disable decimal point key
+                if(event.target.childNodes["0"].dataset.value === '.'){
+                    event.target.classList.add('disabled');
+                    decimalTrigger = event.target;
                 }
-            }
 
-            inputField.value = newValue;
-            inputField.focus();
-            changeFontSize(inputField);
+                // construct new value to be added to DOM
+                const newValue = event.target.childNodes["0"].dataset.value === 'delete' ? currentValue.slice(0, -1) : currentValue + event.target.childNodes["0"].dataset.value;
+
+                // check if new value contains decimal point when value is being deleted
+                if (event.target.childNodes["0"].dataset.value === 'delete' && decimalTrigger !== '') {
+                    if (newValue.indexOf('.') === -1) {
+                        decimalTrigger.classList.remove('disabled');
+                    }
+                }
+
+                inputField.value = newValue;
+                //inputField.focus();
+                changeFontSize(inputField);
+            }
+        });
+
+        baseCurrencyWrapper.addEventListener('click', event => {
+            console.log(event.target);
+            if (event.target.id.match('base-currency-wrapper') || event.target.id.match('convert-from')) {
+                // hide native keypads
+                hideNativeKeyboard(inputField);
+                // move input field up in the DOM
+                inputWrapper.classList.add('moveUp');
+                // reveal custom keypad
+                keypad.classList.add('slideInUp');
+            }
         });
     }
 
@@ -410,10 +408,10 @@
 
                     convertedCurrency = amounttoConvert * exchangeRates;
                     convertCurrencyToField.innerText = convertedCurrency.toFixed(2);
-                    info.innerText = `1 ${baseCurrency} = ${targetCurrency} ${exchangeRates}`;
+                    convertInfo.innerText = `1 ${baseCurrency} = ${targetCurrency} ${exchangeRates}`;
 
                     loader.classList.remove('show');
-                    button.classList.remove('disabled');
+                    //button.classList.remove('disabled');
                 })
                 .catch(error => {
                     console.log(
@@ -426,10 +424,10 @@
 
                         convertedCurrency = amounttoConvert * data;
                         convertCurrencyToField.innerText = convertedCurrency.toFixed(2);
-                        info.innerText = `1 ${baseCurrency} = ${targetCurrency} ${data}`;
+                        convertInfo.innerText = `1 ${baseCurrency} = ${targetCurrency} ${data}`;
 
                         loader.classList.remove('show');
-                        button.classList.remove('disabled');
+                        //button.classList.remove('disabled');
                     });
                 });
         } else {
@@ -441,10 +439,10 @@
                 } else {
                     convertedCurrency = amounttoConvert * data;
                     convertCurrencyToField.innerText = convertedCurrency.toFixed(2);
-                    info.innerText = `1 ${baseCurrency} = ${targetCurrency} ${data}`;
+                    convertInfo.innerText = `1 ${baseCurrency} = ${targetCurrency} ${data}`;
 
                     loader.classList.remove('show');
-                    button.classList.remove('disabled');
+                    //button.classList.remove('disabled');
                 }
             });
         }
