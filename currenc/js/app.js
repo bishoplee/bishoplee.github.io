@@ -124,9 +124,6 @@
             //clear current result
             convertCurrencyToField.innerText = "";
 
-            //show loader
-            loader.classList.add('show');
-
             // restore input to original position
             inputWrapper.classList.remove('moveUp');
 
@@ -181,6 +178,7 @@
                 }
 
                 currencyListContainer.classList.remove('open');
+                calculateExchangeRate();
             }
         });
 
@@ -201,24 +199,6 @@
                 baseCurrencyWrapper.classList.remove('disabled');
             }, 500);
         });
-        /*md_btn.forEach((item) => {
-            const className = 'material-btn--active';
-            item.addEventListener('click', event => {
-                const wave = item.querySelector('.wave');
-                /!*if (item.classList.contains(className)) {
-                }*!/
-                wave.style.left = event.clientX - item.offsetLeft + 'px';
-                wave.style.top = event.clientY - item.offsetTop + 'px';
-
-                void item.offsetWidth;
-                item.classList.add(className);
-            });
-
-            item.addEventListener('animationend', () => {
-                item.classList.remove(className);
-                currencyListContainer.classList.remove('open');
-            });
-        });*/
 
         // allow numbers and decimal point only, applicable to desktop
         inputField.addEventListener('keydown', function(e) {
@@ -425,6 +405,9 @@
 
     // Calculate the exchange rate for selected currencies
     function calculateExchangeRate() {
+        //show loader
+        loader.classList.add('show');
+
         const amounttoConvert = parseFloat(getAmounttoCovert());
         const baseCurrency = document.querySelector('.base__currency__name').id;
         const targetCurrency = document.querySelector('.converted__currency__name').id;
@@ -507,6 +490,7 @@
 //  TODO: [14] load default conversion rate for preselected currencies
 //  TODO: [15] add switch for currency name and rate
 //  TODO: [16] keep track of conversion history
+//  TODO: [17] add app credit to icon on-click event
 
 //COMMENTS: once app loads, check if there are data in IDB,
 // if yes, display data, then fetch fresh data from API and update DOM, then save fresh data to IDB
