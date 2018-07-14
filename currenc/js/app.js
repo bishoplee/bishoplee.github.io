@@ -1,5 +1,5 @@
 (() => {
-    //'use strict';
+    'use strict';
 
     // Check if indexedDB is supported
     if (!('indexedDB' in window)) {
@@ -29,6 +29,9 @@
     const converted = document.querySelector('.converted__currency__name');
     const currencies = document.querySelector('.currencies');
     const backButton = document.querySelector('.back__button');
+    const closeButton = document.querySelector('.close__button');
+    //let md_btn = Array.prototype.slice.call(backButton);
+
     const numberKeyPad = document.querySelector('.number__keypad');
     const convertCurrencyToField = document.getElementById('converted-to');
     const keypad = document.getElementById('keypad');
@@ -186,6 +189,37 @@
             document.getElementById('currencies-list').classList.remove('open');
         });
 
+        // add listener for click on close__button on the keypad view
+        closeButton.addEventListener('click', el => {
+            //console.log(el); return;
+            setTimeout(function() {
+                //hide keypad
+                keypad.classList.remove('slideInUp');
+                // restore input to original position
+                inputWrapper.classList.remove('moveUp');
+                // remove `disable` from base_currency_wrapper
+                baseCurrencyWrapper.classList.remove('disabled');
+            }, 500);
+        });
+        /*md_btn.forEach((item) => {
+            const className = 'material-btn--active';
+            item.addEventListener('click', event => {
+                const wave = item.querySelector('.wave');
+                /!*if (item.classList.contains(className)) {
+                }*!/
+                wave.style.left = event.clientX - item.offsetLeft + 'px';
+                wave.style.top = event.clientY - item.offsetTop + 'px';
+
+                void item.offsetWidth;
+                item.classList.add(className);
+            });
+
+            item.addEventListener('animationend', () => {
+                item.classList.remove(className);
+                currencyListContainer.classList.remove('open');
+            });
+        });*/
+
         // allow numbers and decimal point only, applicable to desktop
         inputField.addEventListener('keydown', function(e) {
             const key = e.keyCode ? e.keyCode : e.which;
@@ -251,7 +285,6 @@
 
         // touch area for keypad trigger
         baseCurrencyWrapper.addEventListener('click', event => {
-            console.log(event.target);
             if (event.target.id.match('base-currency-wrapper') || event.target.id.match('convert-from')) {
                 // hide native keypads
                 hideNativeKeyboard(inputField);
