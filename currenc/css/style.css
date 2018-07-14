@@ -120,11 +120,16 @@ label {position:absolute;bottom:20%;color:#fff;left:15%;font-size:30px;}
 #switch-button span::before {content:"";position:absolute;width:24px;height:1px;border-bottom:2px solid #cf4647;top:50%;left:50%;transform:translateX(-50%);}
 #switch-button span::after {content:"";position:absolute;width:12px;height:12px;border-left:2px solid #cf4647;border-bottom:2px solid #cf4647;transform:rotate(45deg) translateX(190%) translateY(30%);}
 
-#keypad {height:100%;width:100%;top:0;background:#cf4647;z-index:400;padding:152px 0 56px;display:none;will-change:display;}
+#keypad {height:calc(100% + 56px);width:100%;top:-56px;background:#cf4647;z-index:400;padding:0 0 72px;display:none;will-change:display;}
+#keypad .header {height:56px;width:100%;padding:0 8px;position:fixed;top:0;z-index:401;}
+#keypad .header span.back__button {height:48px;width:48px;position:relative;margin:4px;display:block;cursor:pointer;}
+#keypad .header span.back__button::before {content:"";position:absolute;width:24px;height:1px;border-bottom:2px solid #fff;top:50%;left:50%;transform:translateX(-50%);}
+#keypad .header span.back__button::after {content:"";position:absolute;width:12px;height:12px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(45deg) translateX(190%) translateY(30%);}
+
 .slideInUp{display:block!important;animation:slide-in-up .3s cubic-bezier(0, 0, 0.30, 1);}
     @keyframes slide-in-up {from{opacity:0;margin-top:50%;}to{opacity:1;margin-top:0;}}
 
-.number__keypad {display:grid;grid-auto-flow:row;grid-template-columns:auto auto auto;padding:0 8px;height:100%;}
+.number__keypad {display:grid;grid-auto-flow:row;grid-template-columns:auto auto auto;padding:184px 8px 0;height:calc(100% - 28px);}
 .key, .key a {align-items:center;justify-content:center;display:flex;color:#fff;font-size:28px;cursor:pointer;}
 .key a {border:1px solid rgba(255, 255, 255, 0.4);border-radius:50%;width:64px;height:64px;background:#d6444d;pointer-events:none;}
 .key:last-of-type a span {position:absolute;content:"";width:24px;height:8px;border:none;border-bottom:2px solid #ffffff;border-left:2px solid #ffffff;transform:rotate(-45deg);top:40%;right:18px;}

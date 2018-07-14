@@ -213,8 +213,10 @@
             // add vibration on key press for mobile
             navigator.vibrate(50);
             
-            // disable input focus when convert button is clicked
+            // actions to take during conversion process
             if(event.target.childNodes["0"].dataset.value === 'convert'){
+                // enable event on keypad trigger area
+                baseCurrencyWrapper.classList.remove('disabled');
                 return;
             }
 
@@ -247,6 +249,7 @@
             }
         });
 
+        // touch area for keypad trigger
         baseCurrencyWrapper.addEventListener('click', event => {
             console.log(event.target);
             if (event.target.id.match('base-currency-wrapper') || event.target.id.match('convert-from')) {
@@ -256,6 +259,8 @@
                 inputWrapper.classList.add('moveUp');
                 // reveal custom keypad
                 keypad.classList.add('slideInUp');
+                // disable future event on this area
+                baseCurrencyWrapper.classList.add('disabled');
             }
         });
     }
