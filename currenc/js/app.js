@@ -31,8 +31,8 @@
     const backButton = document.querySelector('.back__button');
     const closeButton = document.querySelector('.close__button');
     //let md_btn = Array.prototype.slice.call(backButton);
-
     const numberKeyPad = document.querySelector('.number__keypad');
+    const switchButton = document.getElementById('switch-button');
     const convertCurrencyToField = document.getElementById('converted-to');
     const keypad = document.getElementById('keypad');
     const inputField = document.getElementById('convert-from');
@@ -174,6 +174,8 @@
                 // fixes bug where target currency symbol shows in base currency label
                 if (__this === base) {
                     document.querySelector('label').innerText = currencySymbol;
+                } else {
+                    converted.nextElementSibling.dataset.symbol = currencySymbol;
                 }
 
                 currencyListContainer.classList.remove('open');
@@ -275,6 +277,30 @@
                 baseCurrencyWrapper.classList.add('disabled');
             }
         });
+
+        // switch button
+        switchButton.addEventListener('click', () => {
+            switchButton.classList.add('rotate');
+            const currentBaseId = base.id;
+            const currentTargetId = converted.id;
+            const currentBaseCurrency = base.innerText;
+            const currentTargetCurrency = converted.innerText;
+            const currentBaseSymbol = document.querySelector('label').innerText;
+            const currentTargetSymbol = converted.nextElementSibling.dataset.symbol;
+
+            setTimeout(() => {
+                base.id = currentTargetId;
+                converted.id = currentBaseId;
+                base.innerText = currentTargetCurrency;
+                converted.innerText = currentBaseCurrency;
+                document.querySelector('label').innerText = currentTargetSymbol;
+                converted.nextElementSibling.dataset.symbol = currentBaseSymbol;
+
+                switchButton.classList.remove('rotate');
+
+                calculateExchangeRate();
+            }, 450);
+        })
     }
 
     // Fetch currencies from API url
@@ -491,7 +517,7 @@
 // ... done  TODO: [12] disable double trigger on convert button
 //  TODO: [13] add search to currency list to filter list by value entered
 // ... done  TODO: [14] load default conversion rate for preselected currencies
-//  TODO: [15] add switch for currency name and rate
+// ... done  TODO: [15] add switch for currency name and rate
 //  TODO: [16] keep track of conversion history
 //  TODO: [17] add app credit to icon on-click event
 

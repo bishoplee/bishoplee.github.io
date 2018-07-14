@@ -114,11 +114,20 @@ label {position:absolute;bottom:20%;color:#fff;left:15%;font-size:30px;}
 .inline {display:inline;}
 .disabled {pointer-events:none;}
 .pointer {cursor:pointer;}
+.hidden {display:none;}
 
-#switch-button{top:50%;left:50%;display:flex;align-items:center;justify-content:center;width:90px;height:90px;transform:translateX(-50%) translateY(-50%);border:5px solid #cf4647;background:#fff;border-radius:50%;z-index:200;}
+#switch-button{top:50%;left:50%;display:flex;align-items:center;justify-content:center;width:90px;height:90px;border:5px solid #cf4647;background:#fff;border-radius:50%;z-index:200;margin-top:-45px;margin-left:-45px;}
+/*
 #switch-button span {width:48px;height:48px;display:block;position:relative;transform: rotate(-90deg);}
 #switch-button span::before {content:"";position:absolute;width:24px;height:1px;border-bottom:2px solid #cf4647;top:50%;left:50%;transform:translateX(-50%);}
 #switch-button span::after {content:"";position:absolute;width:12px;height:12px;border-left:2px solid #cf4647;border-bottom:2px solid #cf4647;transform:rotate(45deg) translateX(190%) translateY(30%);}
+*/
+#switch-button.rotate {animation:rotate .45s ease-in;}
+@keyframes rotate {
+    /* 0%{transform-origin:center;transform:rotate(-200deg);opacity:0}
+    to{transform-origin:center;transform:none;opacity:1} */
+    100%{transform-origin:center;transform:rotate(180deg);}
+}
 
 #keypad {height:calc(100% + 56px);width:100%;top:-56px;background:#cf4647;z-index:400;padding:0 0 72px;display:none;will-change:display;}
 #keypad .header {height:64px;width:100%;padding:8px;position:fixed;top:0;z-index:401;overflow:hidden;text-align:right;}
