@@ -112,6 +112,8 @@
             }
         });
 
+        calculateExchangeRate();
+
         customEventListeners();
     }
 
@@ -120,9 +122,6 @@
         convertTrigger.addEventListener('click', () => {
             //hide keypad
             keypad.classList.remove('slideInUp');
-
-            //clear current result
-            convertCurrencyToField.innerText = "";
 
             // restore input to original position
             inputWrapper.classList.remove('moveUp');
@@ -405,6 +404,10 @@
 
     // Calculate the exchange rate for selected currencies
     function calculateExchangeRate() {
+        //clear current result
+        convertCurrencyToField.innerText = "";
+        convertInfo.innerText = "";
+
         //show loader
         loader.classList.add('show');
 
@@ -487,7 +490,7 @@
 // ... done  TODO: [11] catch key press to exempt non-numeric values
 // ... done  TODO: [12] disable double trigger on convert button
 //  TODO: [13] add search to currency list to filter list by value entered
-//  TODO: [14] load default conversion rate for preselected currencies
+// ... done  TODO: [14] load default conversion rate for preselected currencies
 //  TODO: [15] add switch for currency name and rate
 //  TODO: [16] keep track of conversion history
 //  TODO: [17] add app credit to icon on-click event
