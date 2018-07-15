@@ -28,3 +28,12 @@ This is the currency converter progressive web app that accompanies the 7Days of
 
 #### License
 PWA Currency Converter is open-sourced software licensed under the [MIT license](https://github.com/bishoplee/bishoplee.github.io/blob/master/LICENSE)
+
+##### resources
+- https://developers.google.com/web/ilt/pwa/working-with-indexeddb
+- https://developers.google.com/web/updates/2016/06/persistent-storage
+- https://developers.google.com/web/updates/2018/06/a2hs-updates
+- https://developers.google.com/web/fundamentals/primers/service-workers/lifecycle
+- https://jakearchibald.com/2016/caching-best-practices/
+- https://developers.google.com/web/fundamentals/codelabs/your-first-multi-screen-site/
+- https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/

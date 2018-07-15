@@ -11,8 +11,11 @@
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker
             .register('./sw.js')
-            .then(() => {
+            .then(reg => {
                 console.log("Service Worker Registered...");
+                setInterval(() => {
+                    reg.update();
+                }, 3600000);
             }).catch(error => console.error(`Unable to register Service Worker. Error is ${error}`));
     }
 
@@ -461,7 +464,6 @@
                     convertInfo.innerText = `1 ${baseCurrency} = ${targetCurrency} ${exchangeRates}`;
 
                     loader.classList.remove('show');
-                    //button.classList.remove('disabled');
                 })
                 .catch(error => {
                     console.log(
@@ -477,7 +479,6 @@
                         convertInfo.innerText = `1 ${baseCurrency} = ${targetCurrency} ${data}`;
 
                         loader.classList.remove('show');
-                        //button.classList.remove('disabled');
                     });
                 });
         } else {
@@ -492,7 +493,6 @@
                     convertInfo.innerText = `1 ${baseCurrency} = ${targetCurrency} ${data}`;
 
                     loader.classList.remove('show');
-                    //button.classList.remove('disabled');
                 }
             });
         }

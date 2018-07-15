@@ -106,6 +106,7 @@ label {position:absolute;bottom:20%;color:#fff;left:15%;font-size:30px;}
 .converted__currency__name::after {border-right:2px solid #ee4e52;border-bottom:2px solid #ee4e52;}
 .converted__currency {display:block;width:100%;}
 .converted__currency__name{color:#cf4647;text-align: center;border-color:#cf4647;}
+.converted__currency__name + span{display:block;height:56px;width:56px;transform:translateY(-125%) translateX(250%);position:absolute;top:50%;}
 
 .app__offline {background-color:#464a4c;/* #1ab8ef;*/}
 
@@ -117,15 +118,8 @@ label {position:absolute;bottom:20%;color:#fff;left:15%;font-size:30px;}
 .hidden {display:none;}
 
 #switch-button{top:50%;left:50%;display:flex;align-items:center;justify-content:center;width:90px;height:90px;border:5px solid #cf4647;background:#fff;border-radius:50%;z-index:200;margin-top:-45px;margin-left:-45px;}
-/*
-#switch-button span {width:48px;height:48px;display:block;position:relative;transform: rotate(-90deg);}
-#switch-button span::before {content:"";position:absolute;width:24px;height:1px;border-bottom:2px solid #cf4647;top:50%;left:50%;transform:translateX(-50%);}
-#switch-button span::after {content:"";position:absolute;width:12px;height:12px;border-left:2px solid #cf4647;border-bottom:2px solid #cf4647;transform:rotate(45deg) translateX(190%) translateY(30%);}
-*/
 #switch-button.rotate {animation:rotate .45s ease-in;}
 @keyframes rotate {
-    /* 0%{transform-origin:center;transform:rotate(-200deg);opacity:0}
-    to{transform-origin:center;transform:none;opacity:1} */
     100%{transform-origin:center;transform:rotate(180deg);}
 }
 

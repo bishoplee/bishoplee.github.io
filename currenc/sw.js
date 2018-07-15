@@ -5,6 +5,7 @@ const filesToCache = [
 ];
 
 self.addEventListener('install', function(event) {
+    self.skipWaiting();
     event.waitUntil(caches.open(cacheName).then(cache => {
         return cache.addAll([
             './',
@@ -19,6 +20,7 @@ self.addEventListener('install', function(event) {
             './images/currenc-icon-168x168.png',
             './js/idb.js',
             './js/app.js',
+            './js/a2hs.js',
             './js/offline.js',
             './js/toast.js'
         ]);
