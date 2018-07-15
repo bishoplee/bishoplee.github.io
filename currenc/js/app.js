@@ -108,11 +108,7 @@
             const today = new Date().setHours(0,0,0,0);
             const yesterday = data.date_log ? data.date_log : 86400000;
 
-            if (yesterday - today === -86400000){
-                apiFetchCurrenciesList();
-            } else {
-                addCurrencyListtoDOM(data.results);
-            }
+            (yesterday - today === -86400000) ? apiFetchCurrenciesList() : addCurrencyListtoDOM(data.results);
         });
 
         calculateExchangeRate();
