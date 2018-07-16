@@ -501,9 +501,14 @@
                     toast('No connection detected. Retrying in background');
 
                     // retry after 10secs
-                    setTimeout(() => {
+                    const retrial = setTimeout(() => {
                         calculateExchangeRate();
                     }, 10000);
+
+                    window.addEventListener('online', () => {
+                        clearTimeout(retrial);
+                        calculateExchangeRate();
+                    })
                 }
             }
             // state 2 : yes
