@@ -435,8 +435,11 @@
         convertCurrencyToField.innerText = "";
         convertInfo.innerText = "";
 
-        // remove `disable` from base_currency_wrapper
+        // remove `disabled` from base_currency_wrapper
         baseCurrencyWrapper.classList.remove('disabled');
+
+        // remove `disabled` from decimal key on keypad
+        decimalTrigger !== "" ? decimalTrigger.classList.remove('disabled') : false;
 
         // retrieve current input value and format
         inputField.value = numeral(inputField.value).format('0,0.00');
