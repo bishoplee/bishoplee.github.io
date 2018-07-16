@@ -81,7 +81,7 @@ header {position:fixed;width:100%;height:56px;top:0;background-color:#cf4647;dis
 #currencies-list .header span.search__button {height:48px;width:48px;position:relative;margin:4px 4px 4px auto;display:block;cursor:pointer;}
 #currencies-list .header span.search__button::before {content:"";position:absolute;width:12px;height:1px;border-bottom:3px solid #cf4647;top:50%;left:50%;transform:rotate(45deg) translateX(25%) translateY(110%);}
 #currencies-list .header span.search__button::after {content:"";position:absolute;width:20px;height:20px;border:2px solid #cf4647;transform:translateX(50%) translateY(50%);border-radius:100%;}
-#currencies-list ul.currencies {display:block;text-align:left;padding:80px 16px 40px 32px;height:100%;overflow-y:scroll;}
+#currencies-list ul.currencies {display:block;text-align:left;padding:80px 16px 40px;height:100%;overflow-y:scroll;}
 #currencies-list ul.currencies li {cursor:pointer;padding:8px;border-bottom:1px solid #f9e0e1;position:relative;}
 #currencies-list ul.currencies li.currency_list_title {pointer-events:none;height:56px;line-height:56px;}
 #currencies-list ul.currencies li.active::after {position:absolute;content:"";width:24px;height:8px;border:none;border-bottom:2px solid #cf4647;border-left:2px solid #cf4647;transform:rotate(-45deg);top:35%;right:16px;}
