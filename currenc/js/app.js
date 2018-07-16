@@ -154,14 +154,14 @@
         base.addEventListener('click', () => {
             currencyListContainer.classList.add('open');
 
-            __this = this;
+            __this = base;
         });
 
         // add listener for click on target currency selection
         converted.addEventListener('click', () => {
             currencyListContainer.classList.add('open');
 
-            __this = this;
+            __this = converted;
         });
 
         // add listener for click on currency name
