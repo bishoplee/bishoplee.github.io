@@ -21,6 +21,7 @@
 
     let __this = '';
     let decimalTrigger = '';
+    let initialValue = '';
 
     const idbName = "currenc";
 
@@ -202,7 +203,7 @@
                 // remove `disable` from base_currency_wrapper
                 baseCurrencyWrapper.classList.remove('disabled');
                 //default inputField value to 1
-                inputField.value = numeral(1).format('0,0.00');
+                inputField.value = numeral(initialValue).format('0,0.00');
 
                 calculateExchangeRate();
             }, 500);
@@ -269,7 +270,7 @@
             }
         });
 
-        // touch area for keypad trigger
+        // add listener for click on touch area for keypad trigger
         baseCurrencyWrapper.addEventListener('click', event => {
             if (event.target.id.match('base-currency-wrapper') || event.target.id.match('convert-from')) {
                 // hide native keypads
@@ -281,6 +282,7 @@
                 // disable future event on this area
                 baseCurrencyWrapper.classList.add('disabled');
                 // clear input field value
+                initialValue = inputField.value;
                 inputField.value = "";
 
             }
