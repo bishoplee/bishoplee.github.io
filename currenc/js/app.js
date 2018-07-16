@@ -203,6 +203,8 @@
                 baseCurrencyWrapper.classList.remove('disabled');
                 //default inputField value to 1
                 inputField.value = numeral(1).format('0,0.00');
+
+                calculateExchangeRate();
             }, 500);
         });
 
