@@ -22,7 +22,8 @@ self.addEventListener('install', function(event) {
             './js/app.js',
             './js/a2hs.js',
             './js/offline.js',
-            './js/toast.js'
+            './js/toast.js',
+            './js/numeral.min.js'
         ]);
     }));
 });

@@ -54,7 +54,7 @@
 
     const changeFontSize = function(el) {
         const divider = el.value.length > 4 ? (el.value.length < 4 ? false : el.value.length) : false; //get input value
-        let fontSize = 80 - divider * 3; //alter font size depending on string length
+        let fontSize = 80 - divider * 4; //alter font size depending on string length
         el.style.fontSize = fontSize < 30 ? `30px` : fontSize + "px"; //set font size
     };
 
@@ -87,6 +87,13 @@
             );
         };
     };
+
+    /* const numberWithCommas = (x) => {
+        //return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        const parts = x.toString().split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return parts.join(".");
+    }; */
 
     const idbPromise = idb.open(idbName, 1, function(upgradeDB) {
         console.log("Making a new object store to hold currencies list of all countries.");
@@ -136,24 +143,21 @@
                 keypad.classList.remove('slideInUp');
                 // restore input to original position
                 inputWrapper.classList.remove('moveUp');
-                // clear current result
-                convertCurrencyToField.innerText = "";
-                // show loader
-                loader.classList.add('show');
+
                 // do the conversion
                 calculateExchangeRate();
             }
         });
 
         // add listener for click on base currency selection
-        base.addEventListener('click', function() {
+        base.addEventListener('click', () => {
             currencyListContainer.classList.add('open');
 
             __this = this;
         });
 
         // add listener for click on target currency selection
-        converted.addEventListener('click', function() {
+        converted.addEventListener('click', () => {
             currencyListContainer.classList.add('open');
 
             __this = this;
@@ -188,7 +192,7 @@
         });
 
         // add listener for click on close__button on the keypad view
-        closeButton.addEventListener('click', el => {
+        closeButton.addEventListener('click', () => {
             //console.log(el); return;
             setTimeout(function() {
                 //hide keypad
@@ -201,7 +205,7 @@
         });
 
         // allow numbers and decimal point only, applicable to desktop
-        inputField.addEventListener('keydown', function(e) {
+        inputField.addEventListener('keydown', e => {
             const key = e.keyCode ? e.keyCode : e.which;
 
             // 8 : 'Backspace', 9 : '', 13 : 'Enter', 27 : '', 46 : 'Delete', 110 : 'NumpadDecimal', 190 : 'Period'
@@ -229,15 +233,13 @@
             
             // actions to take during conversion process
             if(event.target.childNodes["0"].dataset.value === 'convert'){
-                // enable event on keypad trigger area
-                baseCurrencyWrapper.classList.remove('disabled');
                 return;
             }
-
+            
             // retrieve current input value
             const currentValue = inputField.value;
 
-            if(currentValue.length > 10){
+            if(currentValue.length > 9){
                 navigator.vibrate(100);
                 toast("Maximum number of digits (10) exceeded");
             } else {
@@ -274,6 +276,9 @@
                 keypad.classList.add('slideInUp');
                 // disable future event on this area
                 baseCurrencyWrapper.classList.add('disabled');
+                // clear input field value
+                inputField.value = "";
+
             }
         });
 
@@ -422,23 +427,24 @@
         }
     }
 
-    // Get value in the input field to convert
-    function getAmounttoCovert() {
-        return document.querySelector('input#convert-from').value;
-    }
-
     // Calculate the exchange rate for selected currencies
     function calculateExchangeRate() {
         //clear current result
         convertCurrencyToField.innerText = "";
         convertInfo.innerText = "";
 
+        // remove `disable` from base_currency_wrapper
+        baseCurrencyWrapper.classList.remove('disabled');
+
+        // retrieve current input value and format
+        inputField.value = numeral(inputField.value).format('0,0.00');
+
         //show loader
         loader.classList.add('show');
 
-        const amounttoConvert = parseFloat(getAmounttoCovert());
-        const baseCurrency = document.querySelector('.base__currency__name').id;
-        const targetCurrency = document.querySelector('.converted__currency__name').id;
+        const amounttoConvert = numeral(inputField.value).value();
+        const baseCurrency = base.id;
+        const targetCurrency = converted.id;
         const currencyExchange = `${baseCurrency}_${targetCurrency}`;
         const url = `https://free.currencyconverterapi.com/api/v5/convert?q=${currencyExchange}&compact=ultra`;
 
@@ -456,7 +462,7 @@
                     saveCurrencyConversionRatetoIDB(currencyExchange, exchangeRates);
 
                     convertedCurrency = amounttoConvert * exchangeRates;
-                    convertCurrencyToField.innerText = convertedCurrency.toFixed(2);
+                    convertCurrencyToField.innerText = numeral(convertedCurrency).format('0,0.00');
                     convertInfo.innerText = `1 ${baseCurrency} = ${targetCurrency} ${exchangeRates}`;
 
                     loader.classList.remove('show');
@@ -471,7 +477,7 @@
                         if (typeof data === 'undefined') return;  // display a message to let user know the app is offline
 
                         convertedCurrency = amounttoConvert * data;
-                        convertCurrencyToField.innerText = convertedCurrency.toFixed(2);
+                        convertCurrencyToField.innerText = numeral(convertedCurrency).format('0,0.00');
                         convertInfo.innerText = `1 ${baseCurrency} = ${targetCurrency} ${data}`;
 
                         loader.classList.remove('show');
@@ -485,7 +491,7 @@
                     toast('No connection detected. Retrying in ...', 60000);
                 } else {
                     convertedCurrency = amounttoConvert * data;
-                    convertCurrencyToField.innerText = convertedCurrency.toFixed(2);
+                    convertCurrencyToField.innerText = numeral(convertedCurrency).format('0,0.00');
                     convertInfo.innerText = `1 ${baseCurrency} = ${targetCurrency} ${data}`;
 
                     loader.classList.remove('show');
