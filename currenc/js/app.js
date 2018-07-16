@@ -24,6 +24,8 @@
     let initialValue = '';
 
     const idbName = "currenc";
+    const currenciesAPI_URL = 'https://free.currencyconverterapi.com/api/v5/currencies';
+    const exchangeRateAPI_URL = "https://free.currencyconverterapi.com/api/v5/convert";
 
     const currencyListContainer = document.querySelector('#currencies-list');
     const currencyList = document.querySelector('#currencies-list ul');
@@ -108,7 +110,7 @@
     // Methods
     function init(){
         // Check if `currencies` object already exists in DB
-        fetchValuefromIDB('currencies').then(data => {
+        fetchDatafromIDB('currencies').then(data => {
             if (typeof data === 'undefined') {
                 apiFetchCurrenciesList(); return;
             }
@@ -315,10 +317,7 @@
 
     // Fetch currencies from API url
     function apiFetchCurrenciesList() {
-        //const apiURL = 'https://free.currencyconverterapi.com/api/v5/countries';
-        const apiURL = 'https://free.currencyconverterapi.com/api/v5/currencies';
-
-        fetch(apiURL, {
+        fetch(currenciesAPI_URL, {
             cache: 'default',
         })
             .then(response => response.json())
@@ -334,13 +333,36 @@
                 console.error(
                     `The following error occurred while fetching the list of currencies. ${error}`
                 );
-                fetchValuefromIDB('currencies').then(currencies => {
+                fetchDatafromIDB('currencies').then(currencies => {
                     if (typeof currencies === 'undefined'){
                         toast('No internet connection.');
                     } else {
                         addCurrencyListtoDOM(currencies);
                     }
                 });
+            });
+    }
+
+    // Fetch currency exchange rates from API url
+    function apiFetchExchangeRates(pair1, pair2) {
+        const url = `${exchangeRateAPI_URL}?q=${pair1},${pair2}&compact=ultra`;
+
+        fetch(url, {
+            cache: 'default',
+        })
+            .then(response => response.json())
+            .then(data => {
+                const exchangeRates = Object.values(data);
+
+                // Save currency exchange rate to IndexedDB for when user is offline
+                saveCurrencyConversionRatetoIDB(pair1, exchangeRates[0]);
+                saveCurrencyConversionRatetoIDB(pair2, exchangeRates[1]);
+
+                calculateExchangeRate();
+            })
+            .catch(error => {
+                console.log(`The following error occurred while getting the conversion rate. ${error}`);
+                toast('Server is currently not responding. Try again later.')
             });
     }
 
@@ -359,7 +381,7 @@
     }
 
     // Retrieve values from IDB by key
-    function fetchValuefromIDB(key) {
+    function fetchDatafromIDB(key) {
         return idbPromise
             .then(db => {
                 if (!db) return;
@@ -451,62 +473,49 @@
         //show loader
         loader.classList.add('show');
 
-        const amounttoConvert = numeral(inputField.value).value();
+        const amountToConvert = numeral(inputField.value).value();
         const baseCurrency = base.id;
         const targetCurrency = converted.id;
         const currencyExchange = `${baseCurrency}_${targetCurrency}`;
-        const url = `https://free.currencyconverterapi.com/api/v5/convert?q=${currencyExchange}&compact=ultra`;
+        const currencyExchangePair = `${targetCurrency}_${baseCurrency}`;
 
         let convertedCurrency = '';
 
-        if(navigator.onLine){
-            fetch(url, {
-                cache: 'default',
-            })
-                .then(response => response.json())
-                .then(data => {
-                    const exchangeRates = Object.values(data);
+        // check first if exchange rate has value in idb
+        fetchDatafromIDB(currencyExchange).then(data => {
+            // state 1 : no
+            if (typeof data === 'undefined') {
+                if(navigator.onLine){
+                    apiFetchExchangeRates(currencyExchange, currencyExchangePair);
 
-                    // Save currency exchange rate to IndexedDB for when user is offline
-                    saveCurrencyConversionRatetoIDB(currencyExchange, exchangeRates);
-
-                    convertedCurrency = amounttoConvert * exchangeRates;
-                    convertCurrencyToField.innerText = numeral(convertedCurrency).format('0,0.00');
-                    convertInfo.innerText = `1 ${baseCurrency} = ${targetCurrency} ${exchangeRates}`;
-
-                    loader.classList.remove('show');
-                })
-                .catch(error => {
-                    console.log(
-                        `The following error occurred while getting the conversion rate. ${error}`,
-                    );
-
-                    // Get currency exchange rate when the user is offline
-                    fetchValuefromIDB(currencyExchange).then(data => {
-                        if (typeof data === 'undefined') return;  // display a message to let user know the app is offline
-
-                        convertedCurrency = amounttoConvert * data;
+                    /*if(currentExchangeRate !== 'undefined' || null){
+                        convertedCurrency = amountToConvert * currentExchangeRate;
                         convertCurrencyToField.innerText = numeral(convertedCurrency).format('0,0.00');
-                        convertInfo.innerText = `1 ${baseCurrency} = ${targetCurrency} ${data}`;
+                        convertInfo.innerText = `1 ${baseCurrency} = ${targetCurrency} ${currentExchangeRate}`;
 
                         loader.classList.remove('show');
-                    });
-                });
-        } else {
-            // Get currency exchange rate from IDB
-            fetchValuefromIDB(currencyExchange).then(data => {
-                if (typeof data === 'undefined') {
-                    console.log('Rate is not available offline, turn on your data.');
-                    toast('No connection detected. Retrying in ...', 60000);
-                } else {
-                    convertedCurrency = amounttoConvert * data;
-                    convertCurrencyToField.innerText = numeral(convertedCurrency).format('0,0.00');
-                    convertInfo.innerText = `1 ${baseCurrency} = ${targetCurrency} ${data}`;
-
-                    loader.classList.remove('show');
+                    }*/
                 }
-            });
-        }
+                else {
+                    console.log('Rate is not available offline, turn on your data.');
+                    toast('No connection detected. Retrying in background');
+
+                    // retry after 10secs
+                    setTimeout(() => {
+                        calculateExchangeRate();
+                    }, 10000);
+                }
+            }
+            // state 2 : yes
+            else {
+                convertedCurrency = amountToConvert * data;
+                convertCurrencyToField.innerText = numeral(convertedCurrency).format('0,0.00');
+                convertInfo.innerText = `1 ${baseCurrency} = ${targetCurrency} ${data}`;
+
+                loader.classList.remove('show');
+            }
+        });
+
     }
 
     // initialize app
@@ -535,14 +544,3 @@
 //COMMENTS: once app loads, check if there are data in IDB,
 // if yes, display data, then fetch fresh data from API and update DOM, then save fresh data to IDB
 // if no, connect to API and fetch data, then update DOM, then save data to IDB
-
-/*
-for (let attributes in data.results){
-    let option1 = document.createElement('option');
-    let option2 = document.createElement('option');
-    option1.textContent = `${data.results[attributes].currencySymbol}   -  (${data.results[attributes].id})  -  ${data.results[attributes].currencyName}`;
-    option2.textContent = `${data.results[attributes].currencySymbol}   -  (${data.results[attributes].id})  -  ${data.results[attributes].currencyName}`;
-
-    currencyList.appendChild(option1);
-    convertedTo.appendChild(option2);
-}*/
