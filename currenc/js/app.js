@@ -484,7 +484,7 @@
         if(baseCurrency === targetCurrency) {
             convertedCurrency = amountToConvert * 1;
             convertCurrencyToField.innerText = numeral(convertedCurrency).format('0,0.00');
-            convertInfo.innerText = `1 ${baseCurrency} = ${targetCurrency} 1`;
+            convertInfo.innerText = `1 ${baseCurrency} = ${targetCurrency} ${amountToConvert}`;
 
             loader.classList.remove('show');
         }
