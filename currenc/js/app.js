@@ -267,7 +267,7 @@
                 }
 
                 inputField.value = newValue;
-                //inputField.focus();
+                inputField.focus();
                 changeFontSize(inputField);
             }
         });
@@ -288,6 +288,11 @@
                 inputField.value = "";
 
             }
+        });
+
+        // add listener for focus on input field
+        inputField.addEventListener('focus', () => {
+            hideNativeKeyboard(inputField);
         });
 
         // switch button
@@ -335,7 +340,7 @@
                 );
                 fetchDatafromIDB('currencies').then(currencies => {
                     if (typeof currencies === 'undefined'){
-                        toast('No internet connection.');
+                        toast("You\'re offline - some features are unavailable.");
                     } else {
                         addCurrencyListtoDOM(currencies);
                     }
@@ -498,7 +503,7 @@
                     }
                     else {
                         console.log('Rate is not available offline, turn on your data.');
-                        toast('No connection detected. Retrying in background');
+                        toast('The rates you requested could not be loaded. Retrying in background');
 
                         // retry after 10secs
                         const retrial = setTimeout(() => {
@@ -528,23 +533,6 @@
 
 })();
 
-// ... done  TODO: [1] add spinner/loader to `convertCurrencyToField` to show waiting time
-// ... done  TODO: [2] add number pad to override native keypad
-// ... done  TODO: [3] display notification message to let user know the app is offline when fetching from API
-// ... done  TODO: [4] refetch currencies stored in IDB every 86400000ms
-//  TODO: [5] refetch exchange rates stored in IDB every 3600000ms
-//  TODO: [6] log the most frequently converted currencies
-//  TODO: [7] add refresh button to override [4] and [5]
-// ... done  TODO: [8] catch field value to remove decimal points not to exceed one
-//  TODO: [9] add delete button functionality
-// ... done  TODO: [10] add vibration plugin on key press/tap
-// ... done  TODO: [11] catch key press to exempt non-numeric values
-// ... done  TODO: [12] disable double trigger on convert button
-//  TODO: [13] add search to currency list to filter list by value entered
-// ... done  TODO: [14] load default conversion rate for preselected currencies
-// ... done  TODO: [15] add switch for currency name and rate
-//  TODO: [16] keep track of conversion history
-//  TODO: [17] add app credit to icon on-click event
 
 //COMMENTS: once app loads, check if there are data in IDB,
 // if yes, display data, then fetch fresh data from API and update DOM, then save fresh data to IDB

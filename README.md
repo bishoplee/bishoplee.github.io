@@ -37,3 +37,22 @@ PWA Currency Converter is open-sourced software licensed under the [MIT license]
 - https://jakearchibald.com/2016/caching-best-practices/
 - https://developers.google.com/web/fundamentals/codelabs/your-first-multi-screen-site/
 - https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/
+
+### TODO Updates
+- ... done [1] add spinner/loader to `convertCurrencyToField` to show waiting time
+- ... done [2] add number pad to override native keypad
+- ... done [3] display notification message to let user know the app is offline when fetching from API
+- ... done [4] refetch currencies stored in IDB every 86400000ms
+- // [5] refetch exchange rates stored in IDB every 3600000ms
+- // [6] log the most frequently converted currencies to history
+- // [7] add refresh button to override [4] and [5]
+- ... done [8] catch field value to remove decimal points not to exceed one
+- // [9] add delete button functionality
+- ... done [10] add vibration plugin on key press/tap
+- ... done [11] catch key press to exempt non-numeric values
+- ... done [12] disable double trigger on convert button
+- // [13] add search to currency list to filter list by value entered
+- ... done [14] load default conversion rate for preselected currencies
+- ... done [15] add switch for currency name and rate
+- // [16] keep track of conversion history
+- // [17] add app credit to icon on-click event
