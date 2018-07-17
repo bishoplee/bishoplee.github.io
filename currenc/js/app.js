@@ -481,46 +481,46 @@
 
         let convertedCurrency = '';
 
-        // check first if exchange rate has value in idb
-        fetchDatafromIDB(currencyExchange).then(data => {
-            // state 1 : no
-            if (typeof data === 'undefined') {
-                if(navigator.onLine){
-                    apiFetchExchangeRates(currencyExchange, currencyExchangePair);
+        if(baseCurrency === targetCurrency) {
+            convertedCurrency = amountToConvert * 1;
+            convertCurrencyToField.innerText = numeral(convertedCurrency).format('0,0.00');
+            convertInfo.innerText = `1 ${baseCurrency} = ${targetCurrency} ${data}`;
 
-                    /*if(currentExchangeRate !== 'undefined' || null){
-                        convertedCurrency = amountToConvert * currentExchangeRate;
-                        convertCurrencyToField.innerText = numeral(convertedCurrency).format('0,0.00');
-                        convertInfo.innerText = `1 ${baseCurrency} = ${targetCurrency} ${currentExchangeRate}`;
+            loader.classList.remove('show');
+        }
+        else {
+            // check first if exchange rate has value in idb
+            fetchDatafromIDB(currencyExchange).then(data => {
+                // state 1 : no
+                if (typeof data === 'undefined') {
+                    if (navigator.onLine) {
+                        apiFetchExchangeRates(currencyExchange, currencyExchangePair);
+                    }
+                    else {
+                        console.log('Rate is not available offline, turn on your data.');
+                        toast('No connection detected. Retrying in background');
 
-                        loader.classList.remove('show');
-                    }*/
+                        // retry after 10secs
+                        const retrial = setTimeout(() => {
+                            calculateExchangeRate();
+                        }, 10000);
+
+                        window.addEventListener('online', () => {
+                            clearTimeout(retrial);
+                            calculateExchangeRate();
+                        })
+                    }
                 }
+                // state 2 : yes
                 else {
-                    console.log('Rate is not available offline, turn on your data.');
-                    toast('No connection detected. Retrying in background');
+                    convertedCurrency = amountToConvert * data;
+                    convertCurrencyToField.innerText = numeral(convertedCurrency).format('0,0.00');
+                    convertInfo.innerText = `1 ${baseCurrency} = ${targetCurrency} ${data}`;
 
-                    // retry after 10secs
-                    const retrial = setTimeout(() => {
-                        calculateExchangeRate();
-                    }, 10000);
-
-                    window.addEventListener('online', () => {
-                        clearTimeout(retrial);
-                        calculateExchangeRate();
-                    })
+                    loader.classList.remove('show');
                 }
-            }
-            // state 2 : yes
-            else {
-                convertedCurrency = amountToConvert * data;
-                convertCurrencyToField.innerText = numeral(convertedCurrency).format('0,0.00');
-                convertInfo.innerText = `1 ${baseCurrency} = ${targetCurrency} ${data}`;
-
-                loader.classList.remove('show');
-            }
-        });
-
+            });
+        }
     }
 
     // initialize app
