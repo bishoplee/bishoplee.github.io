@@ -69,3 +69,4 @@ PWA Currency Converter is open-sourced software licensed under the [MIT license]
 ##### Credits
 - https://www.uplabs.com/posts/currency-converter-3a92be3e-0024-46c3-88ea-21f9efab0ab4
 - https://free.currencyconverterapi.com
+- https://stackoverflow.com/

@@ -36,13 +36,18 @@
     const currencies = document.querySelector('.currencies');
     const backButton = document.querySelector('.back__button');
     const closeButton = document.querySelector('.close__button');
+    const searchButton = document.querySelector('.search__button');
+    const searchField = document.querySelector('.search__field');
     //let md_btn = Array.prototype.slice.call(backButton);
     const numberKeyPad = document.querySelector('.number__keypad');
+    const alphaKeyPad = document.querySelector('.keyboard__row');
     const switchButton = document.getElementById('switch-button');
     const convertCurrencyToField = document.getElementById('converted-to');
     const keypad = document.getElementById('keypad');
+    const alphapad = document.getElementById('alphapad');
     const inputField = document.getElementById('convert-from');
     const inputWrapper = document.getElementById('input-wrapper');
+    const searchWrapper = document.getElementById('search-field-wrapper');
     const convertTrigger = document.getElementById('do-conversion');
     const convertInfo = document.getElementById('conversion-info');
     const baseCurrencyWrapper = document.getElementById('base-currency-wrapper');
@@ -52,6 +57,9 @@
         setTimeout(function() {
             el.blur();
             el.removeAttribute('readonly');
+            setTimeout(() => {
+                el.focus();
+            },200)
         }, 10);
     };
 
@@ -209,6 +217,28 @@
 
                 calculateExchangeRate();
             }, 500);
+        });
+
+        // add listener for click on search__button on the currency list view
+        searchButton.addEventListener('click', () => {
+            searchWrapper.classList.toggle('hidden');
+
+            /*const width_var = document.querySelector('#currencies-list .header').clientWidth;
+            const root = document.querySelector(':root');
+            root.style.setProperty('--xaxis', `${width_var-32}px`);*/
+
+            const scala = document.querySelector('.scala');
+
+            setTimeout(function(){
+                scala.style.transform = "scale3d(1,1,1)";
+
+                setTimeout(function(){
+                    searchField.classList.remove('hidden');
+                    scala.previousElementSibling.classList.remove('hidden');
+                    searchField.focus();
+                    hideNativeKeyboard(searchField);
+                },400)
+            },20);
         });
 
         // allow numbers and decimal point only, applicable to desktop
@@ -532,8 +562,3 @@
     init();
 
 })();
-
-
-//COMMENTS: once app loads, check if there are data in IDB,
-// if yes, display data, then fetch fresh data from API and update DOM, then save fresh data to IDB
-// if no, connect to API and fetch data, then update DOM, then save data to IDB
