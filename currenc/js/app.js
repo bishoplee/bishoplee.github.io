@@ -65,6 +65,9 @@
         setTimeout(() => {
             el.blur();
             el.removeAttribute('readonly');
+            setTimeout(() => {
+                el.focus();
+            },200)
         }, 10);
     };
 
