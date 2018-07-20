@@ -62,13 +62,17 @@
 
     const hideNativeKeyboard = function(el) {
         el.setAttribute('readonly', 'readonly');
-        setTimeout(() => {
+
+        if(navigator.userAgent.indexOf("Mobile") > 0){
             el.blur();
             el.removeAttribute('readonly');
+            return true;
+        } else {
             setTimeout(() => {
+                el.removeAttribute('readonly');
                 el.focus();
-            },200)
-        }, 10);
+            }, 10);
+        }
     };
 
     const changeFontSize = function(el) {
@@ -316,6 +320,7 @@
             }
             
             // retrieve current input value
+
             const currentValue = inputField.value;
 
             if(currentValue.length > 9){
@@ -350,14 +355,20 @@
             navigator.vibrate(50);
 
             //console.log(event);
-            
-            // actions to take during conversion process
+            // retrieve current input value
+            const currentValue = searchField.value;
+            const root = document.querySelector(':root');
+
+            // shift case toggle
             if(event.target.dataset.key === 'shift'){
-                //const width_var = document.querySelector('#currencies-list .header').clientWidth;
-                const root = document.querySelector(':root');
-                console.log(root.getAttributeNode);
-                (root.getAttribute('--text-case') === "lowercase") ? root.style.setProperty('--text-case', 'uppercase') : root.style.setProperty('--text-case', 'lowercase');
+                const shiftCase = getComputedStyle(root).getPropertyValue('--text-case');
+                (shiftCase === "lowercase") ? root.style.setProperty('--text-case', 'uppercase') : root.style.setProperty('--text-case', 'lowercase');
             }
+
+            searchField.value = event.target.dataset.key === 'delete' ? currentValue.slice(0, -1) : currentValue + event.target.innerText;
+            //const caretPosition = getComputedStyle(root).getPropertyValue('--cursor-position');
+
+            //document.querySelector('.caret').style.left = parseInt(caretPosition) + searchField.value.length * 9 + "px";
         });
 
         // add listener for click on touch area for keypad trigger

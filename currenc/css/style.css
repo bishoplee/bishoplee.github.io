@@ -631,7 +631,8 @@ svg .fil0 {
     grid-template-columns: auto auto auto;
     padding: 0 8px 0;
     height: calc(100% - 184px);
-    margin-top: 184px;
+    margin:184px auto 0;
+    max-width:400px;
 }
 
 .number__keypad .key,
