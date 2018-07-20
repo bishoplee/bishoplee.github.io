@@ -570,24 +570,23 @@ svg .fil0 {
         }
     }
 
-#alphapad .keyboard {
+/*#alphapad .keyboard {
     padding: 16px 0;
-}
+}*/
 
 #alphapad .keyboard__row {
     display: flex;
-    font-weight: 100;cursor:pointer;
+    font-weight:100;padding:16px 0 2px;
 }
 
 #alphapad .keyboard__row .key {
-    flex: 1;
-    height: 48px;
+    flex: 1;cursor:pointer;
+    height:56px;
     justify-content: center;
     align-items: center;
     display: flex;
     color: #fff;
     font-size: 20px;
-    margin: 4px;
 }
 
 #alphapad .key {
@@ -595,19 +594,19 @@ svg .fil0 {
 }
 
 .keyboard__row:nth-child(2) {
-    padding: 0 18px
+    padding:2px 18px!important;
 }
 
 .keyboard__row:last-child {
-    padding: 0 9px;
+    padding:2px 9px 16px!important;
 }
 
 .keyboard__row:last-child span:first-child {
-    margin-right: 16px;
+    padding-right: 16px;
 }
 
 .keyboard__row:last-child span:last-child {
-    margin-left: 16px;
+    padding-left: 16px;
 }
 
 .slideInUp {

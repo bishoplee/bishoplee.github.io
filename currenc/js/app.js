@@ -354,21 +354,24 @@
             // add vibration on key press for mobile
             navigator.vibrate(50);
 
-            //console.log(event);
+            console.log(event);
             // retrieve current input value
             const currentValue = searchField.value;
             const root = document.querySelector(':root');
 
             // shift case toggle
-            if(event.target.dataset.key === 'shift'){
-                const shiftCase = getComputedStyle(root).getPropertyValue('--text-case');
-                (shiftCase === "lowercase") ? root.style.setProperty('--text-case', 'uppercase') : root.style.setProperty('--text-case', 'lowercase');
+            //if(event.target.dataset.key === 'shift'){
+            if(event.toElement.className !== "keyboard__row") {
+                if (event.toElement.dataset.key === 'shift') {
+                    const shiftCase = getComputedStyle(root).getPropertyValue('--text-case');
+                    (shiftCase === "lowercase") ? root.style.setProperty('--text-case', 'uppercase') : root.style.setProperty('--text-case', 'lowercase');
+                }
+
+                searchField.value = event.toElement.dataset.key === 'delete' ? currentValue.slice(0, -1) : currentValue + event.toElement.innerText;
+                //const caretPosition = getComputedStyle(root).getPropertyValue('--cursor-position');
+
+                //document.querySelector('.caret').style.left = parseInt(caretPosition) + searchField.value.length * 9 + "px";
             }
-
-            searchField.value = event.target.dataset.key === 'delete' ? currentValue.slice(0, -1) : currentValue + event.target.innerText;
-            //const caretPosition = getComputedStyle(root).getPropertyValue('--cursor-position');
-
-            //document.querySelector('.caret').style.left = parseInt(caretPosition) + searchField.value.length * 9 + "px";
         });
 
         // add listener for click on touch area for keypad trigger
