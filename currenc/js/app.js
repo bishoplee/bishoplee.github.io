@@ -443,7 +443,8 @@
         // add listener for focus on input field
         inputField.addEventListener('focus', () => {
             hideNativeKeyboard(inputField);
-        }), searchField.addEventListener('pointerdown', () => {
+        });
+        searchField.addEventListener('focus', () => {
             hideNativeKeyboard(searchField)
         });
 
