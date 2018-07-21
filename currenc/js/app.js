@@ -445,7 +445,7 @@
             hideNativeKeyboard(inputField);
         });
         searchField.addEventListener('focus', () => {
-            hideNativeKeyboard(searchField)
+            hideNativeKeyboard(searchField);
         });
 
         // switch button
