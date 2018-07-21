@@ -466,6 +466,11 @@
                 calculateExchangeRate();
             }, 450);
         });
+
+        // inputfield focus()
+        inputField.addEventListener('focus', () => {
+            hideNativeKeyboard(inputField);
+        })
     }
 
     // Fetch currencies from API url
