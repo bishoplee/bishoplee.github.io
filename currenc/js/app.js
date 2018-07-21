@@ -233,7 +233,7 @@
                 setTimeout(() => {
                     searchField.classList.add('hidden');
                     search__hide.classList.add('hidden');
-                    searchWrapper.classList.toggle('hidden');
+                    searchWrapper.classList.add('hidden');
                     alphapad.classList.remove('reveal');
                     currencyList.style.paddingBottom = "40px";
 
@@ -368,7 +368,7 @@
 
         // add listener for pointerdown on search__button on the currency list view
         searchButton.addEventListener('pointerdown', () => {
-            searchWrapper.classList.toggle('hidden');
+            searchWrapper.classList.remove('hidden');
 
             setTimeout(() => {
                 // bubble reveal
@@ -399,7 +399,7 @@
             setTimeout(() => {
                 searchField.classList.add('hidden');
                 search__hide.classList.add('hidden');
-                searchWrapper.classList.toggle('hidden');
+                searchWrapper.classList.add('hidden');
                 alphapad.classList.remove('reveal');
                 currencyList.style.paddingBottom = "40px";
 
