@@ -194,15 +194,15 @@
             }
         });
 
-        // add listener for pointerdown on base currency selection
-        base.addEventListener('pointerdown', () => {
+        // add listener for click on base currency selection
+        base.addEventListener('click', () => {
             currencyListContainer.classList.add('open');
 
             __this = base;
         });
 
-        // add listener for pointerdown on target currency selection
-        converted.addEventListener('pointerdown', () => {
+        // add listener for click on target currency selection
+        converted.addEventListener('click', () => {
             currencyListContainer.classList.add('open');
 
             __this = converted;
