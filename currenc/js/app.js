@@ -169,8 +169,8 @@
     }
 
     function customEventListeners() {
-        // add listener for click on the `do-conversion` key
-        convertTrigger.addEventListener('click', () => {
+        // add listener for pointerdown on the `do-conversion` key
+        convertTrigger.addEventListener('pointerdown', () => {
             //hide keypad
             keypad.classList.remove('slideInUp');
 
@@ -194,22 +194,22 @@
             }
         });
 
-        // add listener for click on base currency selection
-        base.addEventListener('click', () => {
+        // add listener for pointerdown on base currency selection
+        base.addEventListener('pointerdown', () => {
             currencyListContainer.classList.add('open');
 
             __this = base;
         });
 
-        // add listener for click on target currency selection
-        converted.addEventListener('click', () => {
+        // add listener for pointerdown on target currency selection
+        converted.addEventListener('pointerdown', () => {
             currencyListContainer.classList.add('open');
 
             __this = converted;
         });
 
-        // add listener for click on currency name
-        currencies.addEventListener('click', event => {
+        // add listener for pointerdown on currency name
+        currencies.addEventListener('pointerdown', event => {
             if (event.target.classList.contains('currency__list')) {
                 const currencyName = event.target.childNodes["0"].childNodes["0"].textContent;
                 const currencyID = event.target.id;
@@ -248,13 +248,13 @@
             }
         });
 
-        // add listener for click on back__button on the currency list view
-        backButton.addEventListener('click', () => {
+        // add listener for pointerdown on back__button on the currency list view
+        backButton.addEventListener('pointerdown', () => {
             document.getElementById('currencies-list').classList.remove('open');
         });
 
-        // add listener for click on close__button on the keypad view
-        closeButton.addEventListener('click', () => {
+        // add listener for pointerdown on close__button on the keypad view
+        closeButton.addEventListener('pointerdown', () => {
             //console.log(el); return;
             setTimeout(function() {
                 //hide keypad
@@ -292,8 +292,8 @@
             changeFontSize(inputField);
         });
 
-        // add listener for click on keypad keys
-        numberKeyPad.addEventListener('click', event => {
+        // add listener for pointerdown on keypad keys
+        numberKeyPad.addEventListener('pointerdown', event => {
             // add vibration on key press for mobile
             navigator.vibrate(50);
             
@@ -332,8 +332,8 @@
             }
         });
 
-        // add listener for click on alphakeypad keys
-        alphaKeyPad.addEventListener('click', event => {
+        // add listener for pointerdown on alphakeypad keys
+        alphaKeyPad.addEventListener('pointerdown', event => {
             // add vibration on key press for mobile
             navigator.vibrate(50);
 
@@ -364,8 +364,8 @@
             }
         });
 
-        // add listener for click on search__button on the currency list view
-        searchButton.addEventListener('click', () => {
+        // add listener for pointerdown on search__button on the currency list view
+        searchButton.addEventListener('pointerdown', () => {
             searchWrapper.classList.toggle('hidden');
 
             setTimeout(() => {
@@ -390,8 +390,8 @@
             },20);
         });
 
-        // add listener for click on back-arrow in the search-filter input field
-        alphapadClose.addEventListener('click', () => {
+        // add listener for pointerdown on back-arrow in the search-filter input field
+        alphapadClose.addEventListener('pointerdown', () => {
             scala.style.transform = "scale3d(0,0,0)";
 
             setTimeout(() => {
@@ -422,8 +422,8 @@
             }
         });
 
-        // add listener for click on touch area for keypad trigger
-        baseCurrencyWrapper.addEventListener('click', event => {
+        // add listener for pointerdown on touch area for keypad trigger
+        baseCurrencyWrapper.addEventListener('pointerdown', event => {
             if (event.target.id.match('base-currency-wrapper') || event.target.id.match('convert-from')) {
                 // hide native keypads
                 hideNativeKeyboard(inputField);
@@ -443,10 +443,12 @@
         // add listener for focus on input field
         inputField.addEventListener('focus', () => {
             hideNativeKeyboard(inputField);
+        }), searchField.addEventListener('pointerdown', () => {
+            hideNativeKeyboard(searchField)
         });
 
         // switch button
-        switchButton.addEventListener('click', () => {
+        switchButton.addEventListener('pointerdown', () => {
             switchButton.classList.add('rotate');
             const currentBaseId = base.id;
             const currentTargetId = converted.id;
