@@ -327,7 +327,9 @@
                 }
 
                 inputField.value = newValue;
-                inputField.focus();
+
+                hideNativeKeyboard(inputField);
+
                 changeFontSize(inputField);
             }
         });
@@ -416,7 +418,8 @@
             // if target key is the `delete` button
             if(e.srcElement.dataset.key === "delete") {
                 searchField.value = "";
-                searchField.focus();
+
+                hideNativeKeyboard(searchField);
 
                 searchFilter();
             }
@@ -438,14 +441,6 @@
                 inputField.value = "";
 
             }
-        });
-
-        // add listener for focus on input field
-        inputField.addEventListener('focus', () => {
-            hideNativeKeyboard(inputField);
-        });
-        searchField.addEventListener('focus', () => {
-            hideNativeKeyboard(searchField);
         });
 
         // switch button
