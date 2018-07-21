@@ -208,8 +208,8 @@
             __this = converted;
         });
 
-        // add listener for pointerdown on currency name
-        currencies.addEventListener('pointerdown', event => {
+        // add listener for click on currency name
+        currencies.addEventListener('click', event => {
             if (event.target.classList.contains('currency__list')) {
                 const currencyName = event.target.childNodes["0"].childNodes["0"].textContent;
                 const currencyID = event.target.id;
