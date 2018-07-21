@@ -22,6 +22,7 @@
     let __this = '';
     let decimalTrigger = '';
     let initialValue = '';
+    let currency_list_title_visible = true;
 
     const idbName = "currenc";
     const currenciesAPI_URL = 'https://free.currencyconverterapi.com/api/v5/currencies';
@@ -118,6 +119,27 @@
         return parts.join(".");
     }; */
 
+    const searchFilter = function(list = currencyList.querySelectorAll('.currency__list'), headers = currencyList.querySelectorAll('.currency_list_title')) {
+        // Loop through all list items, and hide those who don't match the search query
+        for (let i = 0; i < list.length; i++) {
+            const a = list[i].getElementsByTagName("a")[0];
+            if (a.innerText.toUpperCase().indexOf(searchField.value.toUpperCase()) > -1) {
+                list[i].classList.remove('hidden');
+
+                if (searchField.value === '') {
+                    Array.prototype.forEach.call(headers, (el) => {
+                        el.classList.remove('hidden');
+
+                        // reset visibility of list headers
+                        currency_list_title_visible = true;
+                    });
+                }
+            } else {
+                list[i].classList.add('hidden');
+            }
+        }
+    };
+
     const idbPromise = idb.open(idbName, 1, function(upgradeDB) {
         console.log("Making a new object store to hold currencies list of all countries.");
         if (!upgradeDB.objectStoreNames.contains('currencyConverter')) {
@@ -204,6 +226,23 @@
                     converted.nextElementSibling.dataset.symbol = currencySymbol;
                 }
 
+                // do some house cleaning
+                scala.style.transform = "scale3d(0,0,0)";
+                searchField.value = "";
+
+                setTimeout(() => {
+                    searchField.classList.add('hidden');
+                    search__hide.classList.add('hidden');
+                    searchWrapper.classList.toggle('hidden');
+                    alphapad.classList.remove('reveal');
+                    currencyList.style.paddingBottom = "40px";
+
+                    setTimeout(() => {
+                        alphapad.classList.add('hidden');
+                        searchFilter();
+                    },20)
+                },10);
+
                 currencyListContainer.classList.remove('open');
                 calculateExchangeRate();
             }
@@ -229,62 +268,6 @@
 
                 calculateExchangeRate();
             }, 500);
-        });
-
-        // add listener for click on search__button on the currency list view
-        searchButton.addEventListener('click', () => {
-            searchWrapper.classList.toggle('hidden');
-
-            setTimeout(function(){
-                scala.style.transform = "scale3d(1,1,1)";
-
-                setTimeout(function(){
-                    searchField.classList.remove('hidden');
-                    search__hide.classList.remove('hidden');
-
-                    hideNativeKeyboard(searchField);
-
-                    setTimeout(() => {
-                        alphapad.classList.remove('hidden');
-                        alphapad.classList.add('reveal');
-                        currencyList.style.paddingBottom = `${(alphapad.clientHeight + 40)}px`;
-                    },20)
-                },400)
-            },20);
-        });
-
-        // add listener for click on back-arrow in the search-filter input field
-        alphapadClose.addEventListener('click', () => {
-            scala.style.transform = "scale3d(0,0,0)";
-
-            setTimeout(() => {
-                searchField.classList.add('hidden');
-                search__hide.classList.add('hidden');
-                searchWrapper.classList.toggle('hidden');
-                alphapad.classList.remove('reveal');
-                currencyList.style.paddingBottom = "40px";
-                
-                setTimeout(() => {
-                    alphapad.classList.add('hidden');
-                },600)
-            },400);
-
-            //Array.prototype.filter.call(document.querySelectorAll(selector), filterFn);
-            /*$('#search').keyup(function () {
-                var yourtext = $(this).val();
-                if (yourtext.length > 0) {
-                    var abc = $("li").filter(function () {
-                        var str = $(this).text();
-                        var re = new RegExp(yourtext, "i");
-                        var result = re.test(str);
-                        if (!result) {
-                            return $(this);
-                        }
-                    }).hide();
-                } else {
-                    $("li").show();
-                }
-            });*/
         });
 
         // allow numbers and decimal point only, applicable to desktop
@@ -354,23 +337,88 @@
             // add vibration on key press for mobile
             navigator.vibrate(50);
 
-            console.log(event);
+            // remove all the list headers
+            if(currency_list_title_visible) {
+                Array.prototype.forEach.call(currencyList.querySelectorAll('.currency_list_title'), (el) => {
+                    el.classList.add('hidden');
+                });
+            }
+
             // retrieve current input value
             const currentValue = searchField.value;
             const root = document.querySelector(':root');
 
-            // shift case toggle
-            //if(event.target.dataset.key === 'shift'){
             if(event.toElement.className !== "keyboard__row") {
+                // shift case toggle from lower to upper and vise-versa
                 if (event.toElement.dataset.key === 'shift') {
                     const shiftCase = getComputedStyle(root).getPropertyValue('--text-case');
                     (shiftCase === "lowercase") ? root.style.setProperty('--text-case', 'uppercase') : root.style.setProperty('--text-case', 'lowercase');
                 }
 
+                // set value of the search filter input field
                 searchField.value = event.toElement.dataset.key === 'delete' ? currentValue.slice(0, -1) : currentValue + event.toElement.innerText;
                 //const caretPosition = getComputedStyle(root).getPropertyValue('--cursor-position');
-
                 //document.querySelector('.caret').style.left = parseInt(caretPosition) + searchField.value.length * 9 + "px";
+
+                searchFilter();
+            }
+        });
+
+        // add listener for click on search__button on the currency list view
+        searchButton.addEventListener('click', () => {
+            searchWrapper.classList.toggle('hidden');
+
+            setTimeout(() => {
+                // bubble reveal
+                scala.style.transform = "scale3d(1,1,1)";
+
+                setTimeout(() => {
+                    // un-hide the input field and arrow
+                    searchField.classList.remove('hidden');
+                    search__hide.classList.remove('hidden');
+
+                    // hide mobile native keyboard
+                    hideNativeKeyboard(searchField);
+
+                    setTimeout(() => {
+                        // reveal the alpha keyboard
+                        alphapad.classList.remove('hidden');
+                        alphapad.classList.add('reveal');
+                        currencyList.style.paddingBottom = `${(alphapad.clientHeight + 40)}px`;
+                    },20)
+                },400)
+            },20);
+        });
+
+        // add listener for click on back-arrow in the search-filter input field
+        alphapadClose.addEventListener('click', () => {
+            scala.style.transform = "scale3d(0,0,0)";
+
+            setTimeout(() => {
+                searchField.classList.add('hidden');
+                search__hide.classList.add('hidden');
+                searchWrapper.classList.toggle('hidden');
+                alphapad.classList.remove('reveal');
+                currencyList.style.paddingBottom = "40px";
+
+                setTimeout(() => {
+                    alphapad.classList.add('hidden');
+                },600)
+            },400);
+        });
+
+        // detect long press on the alpha keys
+        document.addEventListener('long-press', e => {
+            navigator.vibrate(80);
+
+            e.target.setAttribute('data-editing', 'true');
+
+            // if target key is the `delete` button
+            if(e.srcElement.dataset.key === "delete") {
+                searchField.value = "";
+                searchField.focus();
+
+                searchFilter();
             }
         });
 
@@ -419,7 +467,7 @@
 
                 calculateExchangeRate();
             }, 450);
-        })
+        });
     }
 
     // Fetch currencies from API url
@@ -634,3 +682,38 @@
     init();
 
 })();
+
+
+
+//;
+/*$('#search').keyup(function () {
+    var yourtext = $(this).val();
+    if (yourtext.length > 0) {
+        var abc = $("li").filter(function () {
+            var str = $(this).text();
+            var re = new RegExp(yourtext, "i");
+            var result = re.test(str);
+            if (!result) {
+                return $(this);
+            }
+        }).hide();
+    } else {
+        $("li").show();
+    }
+});*/
+
+/*if (searchField.value.length > 0) {
+    //document.querySelectorAll('.currency_list_title');
+    Array.prototype.filter.call(document.querySelectorAll('.currency__list'), el => {
+        const str = el.querySelector('a').innerText;
+        const regx = new RegExp(searchField.value, 'i');
+        const result = regx.test(str);
+
+        if(!result) {
+            el.classList.add('hidden');
+            //return el;
+        } else {
+            el.classList.remove('hidden');
+        }
+    });
+}*/
