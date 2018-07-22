@@ -58,7 +58,7 @@ PWA Currency Converter is open-sourced software licensed under the [MIT license]
 - ... done [10] add vibration plugin on key press/tap
 - ... done [11] catch key press to exempt non-numeric values
 - ... done [12] disable double trigger on convert button
-- // [13] add search to currency list to filter list by value entered
+- ... done [13] add search to currency list to filter list by value entered
 - ... done [14] load default conversion rate for preselected currencies
 - ... done [15] add switch for currency name and rate
 - // [16] keep track of conversion history

@@ -39,7 +39,7 @@
     const closeButton = document.querySelector('.close__button');
     const searchButton = document.querySelector('.search__button');
     const searchField = document.querySelector('.search__field');
-    const alphapadClose = document.querySelector('#search-field-wrapper .back__button');
+    const alphaKeyPadClose = document.querySelector('#search-field-wrapper .back__button');
     const numberKeyPad = document.querySelector('.number__keypad');
     const alphaKeyPad = document.querySelector('.keyboard');
 
@@ -169,18 +169,6 @@
     }
 
     function customEventListeners() {
-        // add listener for pointerdown on the `do-conversion` key
-        convertTrigger.addEventListener('pointerdown', () => {
-            //hide keypad
-            keypad.classList.remove('slideInUp');
-
-            // restore input to original position
-            inputWrapper.classList.remove('moveUp');
-
-            //do the conversion calculation
-            calculateExchangeRate();
-        });
-
         // detect if 'enter' key is pressed
         body.addEventListener('keydown', event => {
             if (event.keyCode === 13) {
@@ -194,21 +182,21 @@
             }
         });
 
-        // add listener for click on base currency selection
+        // #base - add listener for click on base currency selection
         base.addEventListener('click', () => {
             currencyListContainer.classList.add('open');
 
             __this = base;
         });
 
-        // add listener for click on target currency selection
+        // #converted - add listener for click on target currency selection
         converted.addEventListener('click', () => {
             currencyListContainer.classList.add('open');
 
             __this = converted;
         });
 
-        // add listener for click on currency name
+        // #currencies - add listener for click on currency name
         currencies.addEventListener('click', event => {
             if (event.target.classList.contains('currency__list')) {
                 const currencyName = event.target.childNodes["0"].childNodes["0"].textContent;
@@ -248,29 +236,146 @@
             }
         });
 
-        // add listener for pointerdown on back__button on the currency list view
+        // #backButton - add listener for pointerdown on back__button on the currency list view
         backButton.addEventListener('pointerdown', () => {
             document.getElementById('currencies-list').classList.remove('open');
         });
 
-        // add listener for pointerdown on close__button on the keypad view
-        closeButton.addEventListener('pointerdown', () => {
-            //console.log(el); return;
-            setTimeout(function() {
-                //hide keypad
-                keypad.classList.remove('slideInUp');
-                // restore input to original position
-                inputWrapper.classList.remove('moveUp');
-                // remove `disable` from base_currency_wrapper
-                baseCurrencyWrapper.classList.remove('disabled');
-                //default inputField value to 1
-                inputField.value = numeral(initialValue).format('0,0.00');
+        // #searchButton - add listener for pointerdown on search__button on the currency list view
+        searchButton.addEventListener('pointerdown', () => {
+            searchWrapper.classList.remove('hidden');
 
-                calculateExchangeRate();
-            }, 500);
+            setTimeout(() => {
+                // bubble reveal
+                scala.style.transform = "scale3d(1,1,1)";
+
+                setTimeout(() => {
+                    // un-hide the input field and arrow
+                    searchField.classList.remove('hidden');
+                    search__hide.classList.remove('hidden');
+
+                    // hide mobile native keyboard
+                    hideNativeKeyboard(searchField);
+
+                    setTimeout(() => {
+                        // reveal the alpha keyboard
+                        alphapad.classList.remove('hidden');
+                        alphapad.classList.add('reveal');
+                        currencyList.style.paddingBottom = `${(alphapad.clientHeight + 40)}px`;
+                    },20)
+                },400)
+            },20);
         });
 
-        // allow numbers and decimal point only, applicable to desktop
+        // #alphaKeyPadClose - add listener for pointerdown on back-arrow in the search-filter input field
+        alphaKeyPadClose.addEventListener('pointerdown', () => {
+            scala.style.transform = "scale3d(0,0,0)";
+
+            setTimeout(() => {
+                searchField.classList.add('hidden');
+                search__hide.classList.add('hidden');
+                searchWrapper.classList.add('hidden');
+                alphapad.classList.remove('reveal');
+                currencyList.style.paddingBottom = "40px";
+
+                setTimeout(() => {
+                    alphapad.classList.add('hidden');
+                },600)
+            },400);
+        });
+
+        // #alphaKeyPad - add listener for pointerdown on alphakeypad keys
+        alphaKeyPad.addEventListener('pointerdown', event => {
+            // add vibration on key press for mobile
+            navigator.vibrate(40);
+
+            // remove all the list headers
+            if(currency_list_title_visible) {
+                Array.prototype.forEach.call(currencyList.querySelectorAll('.currency_list_title'), (el) => {
+                    el.classList.add('hidden');
+                });
+            }
+
+            // retrieve current search input value
+            const currentValue = searchField.value;
+            const root = document.querySelector(':root');
+
+            if(event.toElement.className !== "keyboard__row") {
+                // shift case toggle from lower to upper and vise-versa
+                if (event.toElement.dataset.key === 'shift') {
+                    const shiftCase = getComputedStyle(root).getPropertyValue('--text-case');
+                    (shiftCase === "lowercase") ? root.style.setProperty('--text-case', 'uppercase') : root.style.setProperty('--text-case', 'lowercase');
+                }
+
+                // set value of the search filter input field
+                searchField.value = event.toElement.dataset.key === 'delete' ? currentValue.slice(0, -1) : currentValue + event.toElement.innerText;
+                //const caretPosition = getComputedStyle(root).getPropertyValue('--cursor-position');
+                //document.querySelector('.caret').style.left = parseInt(caretPosition) + searchField.value.length * 9 + "px";
+
+                searchFilter();
+            }
+        });
+
+        // #long-press - detect long press on the alpha keys
+        document.addEventListener('long-press', el => {
+            navigator.vibrate(80);
+
+            el.target.setAttribute('data-editing', 'true');
+
+            // if target key is the `delete` button
+            if(el.srcElement.dataset.key === "delete") {
+                searchField.value = "";
+
+                hideNativeKeyboard(searchField);
+
+                searchFilter();
+            }
+        });
+
+        // #switchButton - switch button event handler to activate currency name switching
+        switchButton.addEventListener('pointerdown', () => {
+            // subtle rotate animation for visual effect
+            switchButton.classList.add('rotate');
+
+            const currentBaseId = base.id;
+            const currentTargetId = converted.id;
+            const currentBaseCurrency = base.innerText;
+            const currentTargetCurrency = converted.innerText;
+            const currentBaseSymbol = document.querySelector('label').innerText;
+            const currentTargetSymbol = converted.nextElementSibling.dataset.symbol;
+
+            setTimeout(() => {
+                base.id = currentTargetId;
+                converted.id = currentBaseId;
+                base.innerText = currentTargetCurrency;
+                converted.innerText = currentBaseCurrency;
+                document.querySelector('label').innerText = currentTargetSymbol;
+                converted.nextElementSibling.dataset.symbol = currentBaseSymbol;
+
+                switchButton.classList.remove('rotate');
+
+                calculateExchangeRate();
+            }, 450);
+        });
+
+        // #baseCurrencyWrapper - add listener for pointerdown on touch area for keypad trigger
+        baseCurrencyWrapper.addEventListener('pointerdown', event => {
+            if (event.target.id.match('base-currency-wrapper') || event.target.id.match('convert-from')) {
+                // hide native key[pad || board]s
+                hideNativeKeyboard(inputField);
+                // move input field up in the DOM
+                inputWrapper.classList.add('moveUp');
+                // reveal custom keypad
+                keypad.classList.add('slideInUp');
+                // disable future event on this area
+                baseCurrencyWrapper.classList.add('disabled');
+                // clear input field value
+                initialValue = inputField.value;
+                inputField.value = "";
+            }
+        });
+
+        // #inputField - allow numbers and decimal point only, applicable to desktop
         inputField.addEventListener('keydown', e => {
             const key = e.keyCode ? e.keyCode : e.which;
 
@@ -287,27 +392,49 @@
                 && (key !== 110 || this.value.indexOf('.') !== -1)
                 && ((key < 48 && key !== 8)
                     || (key > 57 && key < 96)
-                        || key > 105)) e.preventDefault();
+                    || key > 105)) e.preventDefault();
 
             changeFontSize(inputField);
         });
 
-        // add listener for pointerdown on keypad keys
+        // #inputField - show or hide cursor when inputField focus()
+        inputField.addEventListener('focus', () => {
+            hideNativeKeyboard(inputField);
+        })
+
+        // #closeButton - add listener for pointerdown on close__button on the keypad view
+        closeButton.addEventListener('pointerdown', () => {
+            //console.log(el); return;
+            setTimeout(function() {
+                //hide keypad
+                keypad.classList.remove('slideInUp');
+                // restore input to original position
+                inputWrapper.classList.remove('moveUp');
+                // remove `disable` from base_currency_wrapper
+                baseCurrencyWrapper.classList.remove('disabled');
+                //default inputField value to 1
+                inputField.value = numeral(initialValue).format('0,0.00');
+
+                calculateExchangeRate();
+            }, 500);
+        });
+
+        // #numberKeyPad - add listener for pointerdown on keypad keys
         numberKeyPad.addEventListener('pointerdown', event => {
             // add vibration on key press for mobile
-            navigator.vibrate(50);
-            
+            navigator.vibrate(40);
+
             // actions to take during conversion process
             if(event.target.childNodes["0"].dataset.value === 'convert'){
                 return;
             }
-            
+
             // retrieve current input value
 
             const currentValue = inputField.value;
 
             if(currentValue.length > 9){
-                navigator.vibrate(100);
+                navigator.vibrate(20, 5, 50);
                 toast("Maximum number of digits (10) exceeded");
             } else {
                 // disable decimal point key
@@ -334,143 +461,17 @@
             }
         });
 
-        // add listener for pointerdown on alphakeypad keys
-        alphaKeyPad.addEventListener('pointerdown', event => {
-            // add vibration on key press for mobile
-            navigator.vibrate(50);
+        // #convertTrigger - add listener for pointerdown on the `do-conversion` key
+        convertTrigger.addEventListener('pointerdown', () => {
+            //hide keypad
+            keypad.classList.remove('slideInUp');
 
-            // remove all the list headers
-            if(currency_list_title_visible) {
-                Array.prototype.forEach.call(currencyList.querySelectorAll('.currency_list_title'), (el) => {
-                    el.classList.add('hidden');
-                });
-            }
+            // restore input to original position
+            inputWrapper.classList.remove('moveUp');
 
-            // retrieve current input value
-            const currentValue = searchField.value;
-            const root = document.querySelector(':root');
-
-            if(event.toElement.className !== "keyboard__row") {
-                // shift case toggle from lower to upper and vise-versa
-                if (event.toElement.dataset.key === 'shift') {
-                    const shiftCase = getComputedStyle(root).getPropertyValue('--text-case');
-                    (shiftCase === "lowercase") ? root.style.setProperty('--text-case', 'uppercase') : root.style.setProperty('--text-case', 'lowercase');
-                }
-
-                // set value of the search filter input field
-                searchField.value = event.toElement.dataset.key === 'delete' ? currentValue.slice(0, -1) : currentValue + event.toElement.innerText;
-                //const caretPosition = getComputedStyle(root).getPropertyValue('--cursor-position');
-                //document.querySelector('.caret').style.left = parseInt(caretPosition) + searchField.value.length * 9 + "px";
-
-                searchFilter();
-            }
+            //do the conversion calculation
+            calculateExchangeRate();
         });
-
-        // add listener for pointerdown on search__button on the currency list view
-        searchButton.addEventListener('pointerdown', () => {
-            searchWrapper.classList.remove('hidden');
-
-            setTimeout(() => {
-                // bubble reveal
-                scala.style.transform = "scale3d(1,1,1)";
-
-                setTimeout(() => {
-                    // un-hide the input field and arrow
-                    searchField.classList.remove('hidden');
-                    search__hide.classList.remove('hidden');
-
-                    // hide mobile native keyboard
-                    hideNativeKeyboard(searchField);
-
-                    setTimeout(() => {
-                        // reveal the alpha keyboard
-                        alphapad.classList.remove('hidden');
-                        alphapad.classList.add('reveal');
-                        currencyList.style.paddingBottom = `${(alphapad.clientHeight + 40)}px`;
-                    },20)
-                },400)
-            },20);
-        });
-
-        // add listener for pointerdown on back-arrow in the search-filter input field
-        alphapadClose.addEventListener('pointerdown', () => {
-            scala.style.transform = "scale3d(0,0,0)";
-
-            setTimeout(() => {
-                searchField.classList.add('hidden');
-                search__hide.classList.add('hidden');
-                searchWrapper.classList.add('hidden');
-                alphapad.classList.remove('reveal');
-                currencyList.style.paddingBottom = "40px";
-
-                setTimeout(() => {
-                    alphapad.classList.add('hidden');
-                },600)
-            },400);
-        });
-
-        // detect long press on the alpha keys
-        document.addEventListener('long-press', e => {
-            navigator.vibrate(80);
-
-            e.target.setAttribute('data-editing', 'true');
-
-            // if target key is the `delete` button
-            if(e.srcElement.dataset.key === "delete") {
-                searchField.value = "";
-
-                hideNativeKeyboard(searchField);
-
-                searchFilter();
-            }
-        });
-
-        // add listener for pointerdown on touch area for keypad trigger
-        baseCurrencyWrapper.addEventListener('pointerdown', event => {
-            if (event.target.id.match('base-currency-wrapper') || event.target.id.match('convert-from')) {
-                // hide native keypads
-                hideNativeKeyboard(inputField);
-                // move input field up in the DOM
-                inputWrapper.classList.add('moveUp');
-                // reveal custom keypad
-                keypad.classList.add('slideInUp');
-                // disable future event on this area
-                baseCurrencyWrapper.classList.add('disabled');
-                // clear input field value
-                initialValue = inputField.value;
-                inputField.value = "";
-
-            }
-        });
-
-        // switch button
-        switchButton.addEventListener('pointerdown', () => {
-            switchButton.classList.add('rotate');
-            const currentBaseId = base.id;
-            const currentTargetId = converted.id;
-            const currentBaseCurrency = base.innerText;
-            const currentTargetCurrency = converted.innerText;
-            const currentBaseSymbol = document.querySelector('label').innerText;
-            const currentTargetSymbol = converted.nextElementSibling.dataset.symbol;
-
-            setTimeout(() => {
-                base.id = currentTargetId;
-                converted.id = currentBaseId;
-                base.innerText = currentTargetCurrency;
-                converted.innerText = currentBaseCurrency;
-                document.querySelector('label').innerText = currentTargetSymbol;
-                converted.nextElementSibling.dataset.symbol = currentBaseSymbol;
-
-                switchButton.classList.remove('rotate');
-
-                calculateExchangeRate();
-            }, 450);
-        });
-
-        // inputfield focus()
-        inputField.addEventListener('focus', () => {
-            hideNativeKeyboard(inputField);
-        })
     }
 
     // Fetch currencies from API url
@@ -685,38 +686,3 @@
     init();
 
 })();
-
-
-
-//;
-/*$('#search').keyup(function () {
-    var yourtext = $(this).val();
-    if (yourtext.length > 0) {
-        var abc = $("li").filter(function () {
-            var str = $(this).text();
-            var re = new RegExp(yourtext, "i");
-            var result = re.test(str);
-            if (!result) {
-                return $(this);
-            }
-        }).hide();
-    } else {
-        $("li").show();
-    }
-});*/
-
-/*if (searchField.value.length > 0) {
-    //document.querySelectorAll('.currency_list_title');
-    Array.prototype.filter.call(document.querySelectorAll('.currency__list'), el => {
-        const str = el.querySelector('a').innerText;
-        const regx = new RegExp(searchField.value, 'i');
-        const result = regx.test(str);
-
-        if(!result) {
-            el.classList.add('hidden');
-            //return el;
-        } else {
-            el.classList.remove('hidden');
-        }
-    });
-}*/
