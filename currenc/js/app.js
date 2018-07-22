@@ -7,18 +7,6 @@
         return;
     }
 
-    // Register Service worker
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker
-            .register('./sw.js')
-            .then(reg => {
-                console.log("Service Worker Registered...");
-                setInterval(() => {
-                    reg.update();
-                }, 3600000);
-            }).catch(error => console.error(`Unable to register Service Worker. Error is ${error}`));
-    }
-
     let __this = '';
     let decimalTrigger = '';
     let initialValue = '';
@@ -64,7 +52,7 @@
     const hideNativeKeyboard = function(el) {
         el.setAttribute('readonly', 'readonly');
 
-        if(navigator.userAgent.indexOf("Mobile") > 0){
+        if (navigator.userAgent.indexOf("Mobile") > 0) {
             el.blur();
             el.removeAttribute('readonly');
             return true;
@@ -83,14 +71,14 @@
     };
 
     const toTitleCase = function(str) {
-        return str.replace(/\b\w*/g, function(txt){
-            return txt === 'and' ? txt : txt.charAt(0).toUpperCase() + txt.substr(1);//.toLowerCase();
+        return str.replace(/\b\w*/g, function(txt) {
+            return txt === 'and' ? txt : txt.charAt(0).toUpperCase() + txt.substr(1); //.toLowerCase();
         });
     };
 
-    const compareValues = function(key, order='asc') {
+    const compareValues = function(key, order = 'asc') {
         return function(a, b) {
-            if(!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
+            if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
                 // property doesn't exist on either object
                 return 0;
             }
@@ -111,13 +99,6 @@
             );
         };
     };
-
-    /* const numberWithCommas = (x) => {
-        //return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        const parts = x.toString().split(".");
-        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        return parts.join(".");
-    }; */
 
     const searchFilter = function(list = currencyList.querySelectorAll('.currency__list'), headers = currencyList.querySelectorAll('.currency_list_title')) {
         // Loop through all list items, and hide those who don't match the search query
@@ -144,23 +125,22 @@
         console.log("Making a new object store to hold currencies list of all countries.");
         if (!upgradeDB.objectStoreNames.contains('currencyConverter')) {
             upgradeDB.createObjectStore('currencyConverter');
-            /*const currenciesOS = upgradeDB.createObjectStore('currencyConverter',{keyPath : 'id'});
-            currenciesOS.createIndex('currency_id', 'currencyId', {unique : true} )*/
         }
     });
 
     // Methods
-    function init(){
+    function init() {
         // Check if `currencies` object already exists in DB
         fetchDatafromIDB('currencies').then(data => {
             if (typeof data === 'undefined') {
-                apiFetchCurrenciesList(); return;
+                apiFetchCurrenciesList();
+                return;
             }
 
-            const today = new Date().setHours(0,0,0,0);
+            const today = new Date().setHours(0, 0, 0, 0);
             const yesterday = data.date_log ? data.date_log : 86400000;
 
-            (yesterday - today === -86400000) ? apiFetchCurrenciesList() : addCurrencyListtoDOM(data.results);
+            (yesterday - today === -86400000) ? apiFetchCurrenciesList(): addCurrencyListtoDOM(data.results);
         });
 
         calculateExchangeRate();
@@ -228,8 +208,8 @@
                     setTimeout(() => {
                         alphapad.classList.add('hidden');
                         searchFilter();
-                    },20)
-                },10);
+                    }, 20)
+                }, 10);
 
                 currencyListContainer.classList.remove('open');
                 calculateExchangeRate();
@@ -262,9 +242,9 @@
                         alphapad.classList.remove('hidden');
                         alphapad.classList.add('reveal');
                         currencyList.style.paddingBottom = `${(alphapad.clientHeight + 40)}px`;
-                    },20)
-                },400)
-            },20);
+                    }, 20)
+                }, 400)
+            }, 20);
         });
 
         // #alphaKeyPadClose - add listener for pointerdown on back-arrow in the search-filter input field
@@ -280,8 +260,8 @@
 
                 setTimeout(() => {
                     alphapad.classList.add('hidden');
-                },600)
-            },400);
+                }, 600)
+            }, 400);
         });
 
         // #alphaKeyPad - add listener for pointerdown on alphakeypad keys
@@ -290,7 +270,7 @@
             navigator.vibrate(40);
 
             // remove all the list headers
-            if(currency_list_title_visible) {
+            if (currency_list_title_visible) {
                 Array.prototype.forEach.call(currencyList.querySelectorAll('.currency_list_title'), (el) => {
                     el.classList.add('hidden');
                 });
@@ -300,11 +280,11 @@
             const currentValue = searchField.value;
             const root = document.querySelector(':root');
 
-            if(event.toElement.className !== "keyboard__row") {
+            if (event.toElement.className !== "keyboard__row") {
                 // shift case toggle from lower to upper and vise-versa
                 if (event.toElement.dataset.key === 'shift') {
                     const shiftCase = getComputedStyle(root).getPropertyValue('--text-case');
-                    (shiftCase === "lowercase") ? root.style.setProperty('--text-case', 'uppercase') : root.style.setProperty('--text-case', 'lowercase');
+                    (shiftCase === "lowercase") ? root.style.setProperty('--text-case', 'uppercase'): root.style.setProperty('--text-case', 'lowercase');
                 }
 
                 // set value of the search filter input field
@@ -323,7 +303,7 @@
             el.target.setAttribute('data-editing', 'true');
 
             // if target key is the `delete` button
-            if(el.srcElement.dataset.key === "delete") {
+            if (el.srcElement.dataset.key === "delete") {
                 searchField.value = "";
 
                 hideNativeKeyboard(searchField);
@@ -381,18 +361,18 @@
 
             // 8 : 'Backspace', 9 : '', 13 : 'Enter', 27 : '', 46 : 'Delete', 110 : 'NumpadDecimal', 190 : 'Period'
             if (!([8, 9, 13, 27, 46, 110, 190].indexOf(key) !== -1 ||
-                (key === 65 && (e.ctrlKey || e.metaKey)) ||
-                (key >= 35 && key <= 40) ||
-                (key >= 48 && key <= 57 && !(e.shiftKey || e.altKey)) ||
-                (key >= 96 && key <= 105)
-            )) e.preventDefault();
+                    (key === 65 && (e.ctrlKey || e.metaKey)) ||
+                    (key >= 35 && key <= 40) ||
+                    (key >= 48 && key <= 57 && !(e.shiftKey || e.altKey)) ||
+                    (key >= 96 && key <= 105)
+                )) e.preventDefault();
 
             // prevents a second decimal point
-            if ((key !== 190 || this.value.indexOf('.') !== -1)
-                && (key !== 110 || this.value.indexOf('.') !== -1)
-                && ((key < 48 && key !== 8)
-                    || (key > 57 && key < 96)
-                    || key > 105)) e.preventDefault();
+            if ((key !== 190 || this.value.indexOf('.') !== -1) &&
+                (key !== 110 || this.value.indexOf('.') !== -1) &&
+                ((key < 48 && key !== 8) ||
+                    (key > 57 && key < 96) ||
+                    key > 105)) e.preventDefault();
 
             changeFontSize(inputField);
         });
@@ -425,7 +405,7 @@
             navigator.vibrate(40);
 
             // actions to take during conversion process
-            if(event.target.childNodes["0"].dataset.value === 'convert'){
+            if (event.target.childNodes["0"].dataset.value === 'convert') {
                 return;
             }
 
@@ -433,12 +413,12 @@
 
             const currentValue = inputField.value;
 
-            if(currentValue.length > 9){
+            if (currentValue.length > 9) {
                 navigator.vibrate(20, 5, 50);
                 toast("Maximum number of digits (10) exceeded");
             } else {
                 // disable decimal point key
-                if(event.target.childNodes["0"].dataset.value === '.'){
+                if (event.target.childNodes["0"].dataset.value === '.') {
                     event.target.classList.add('disabled');
                     decimalTrigger = event.target;
                 }
@@ -477,11 +457,11 @@
     // Fetch currencies from API url
     function apiFetchCurrenciesList() {
         fetch(currenciesAPI_URL, {
-            cache: 'default',
-        })
+                cache: 'default',
+            })
             .then(response => response.json())
             .then(data => {
-                data.date_log = new Date().setHours(0,0,0,0);
+                data.date_log = new Date().setHours(0, 0, 0, 0);
 
                 // Save currency list to IndexedDB for offline access
                 saveCurrenciesListtoIDB('currencies', data);
@@ -493,7 +473,7 @@
                     `The following error occurred while fetching the list of currencies. ${error}`
                 );
                 fetchDatafromIDB('currencies').then(currencies => {
-                    if (typeof currencies === 'undefined'){
+                    if (typeof currencies === 'undefined') {
                         toast("You\'re offline - some features are unavailable.");
                     } else {
                         addCurrencyListtoDOM(currencies);
@@ -507,8 +487,8 @@
         const url = `${exchangeRateAPI_URL}?q=${pair1},${pair2}&compact=ultra`;
 
         fetch(url, {
-            cache: 'default',
-        })
+                cache: 'default',
+            })
             .then(response => response.json())
             .then(data => {
                 const exchangeRates = Object.values(data);
@@ -574,13 +554,13 @@
         const result = Object.values(data).reduce((r, e) => {
             let group = e.currencyName[0];
 
-            if(!r[group]) r[group] = {group, children: [e]}
+            if (!r[group]) r[group] = { group, children: [e] }
             else r[group].children.push(e);
 
             return r;
         }, {});
 
-        for (const currency of Object.values(result).sort(compareValues('group'))){
+        for (const currency of Object.values(result).sort(compareValues('group'))) {
             const li = document.createElement("li");
 
             li.className = "currency_list_title";
@@ -588,7 +568,7 @@
 
             currencyList.appendChild(li);
 
-            const reorder = [...currency.children].sort(function (a, b) {
+            const reorder = [...currency.children].sort(function(a, b) {
                 return (a.currencyName > b.currencyName) ? 1 : ((b.currencyName > a.currencyName) ? -1 : 0);
             });
 
@@ -640,22 +620,20 @@
 
         let convertedCurrency = '';
 
-        if(baseCurrency === targetCurrency) {
+        if (baseCurrency === targetCurrency) {
             convertedCurrency = amountToConvert * 1;
             convertCurrencyToField.innerText = numeral(convertedCurrency).format('0,0.00');
             convertInfo.innerText = `1 ${baseCurrency} = ${targetCurrency} 1`;
 
             loader.classList.remove('show');
-        }
-        else {
+        } else {
             // check first if exchange rate has value in idb
             fetchDatafromIDB(currencyExchange).then(data => {
                 // state 1 : no
                 if (typeof data === 'undefined') {
                     if (navigator.onLine) {
                         apiFetchExchangeRates(currencyExchange, currencyExchangePair);
-                    }
-                    else {
+                    } else {
                         console.log('Rate is not available offline, turn on your data.');
                         toast('The rates you requested could not be loaded. Retrying in background');
 
@@ -683,6 +661,6 @@
     }
 
     // initialize app
-    init();
+    document.addEventListener('deviceready', init(), false);
 
 })();
