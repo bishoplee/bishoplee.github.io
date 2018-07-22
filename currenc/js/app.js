@@ -683,6 +683,7 @@
     }
 
     // initialize app
-    init();
+    document.addEventListener('deviceready', init(), false);
+    //init();
 
 })();
