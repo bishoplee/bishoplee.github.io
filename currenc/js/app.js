@@ -16,6 +16,7 @@
     const currenciesAPI_URL = 'https://free.currencyconverterapi.com/api/v5/currencies';
     const exchangeRateAPI_URL = "https://free.currencyconverterapi.com/api/v5/convert";
 
+    const header = document.querySelector('header');
     const currencyListContainer = document.querySelector('#currencies-list');
     const currencyList = document.querySelector('#currencies-list ul');
     const loader = document.querySelector('.loader');
@@ -48,6 +49,15 @@
     const convertTrigger = document.getElementById('do-conversion');
     const convertInfo = document.getElementById('conversion-info');
     const baseCurrencyWrapper = document.getElementById('base-currency-wrapper');
+
+    const updateNetworkStatus = function() {
+        if (navigator.connection.type !== "none") {
+            header.classList.remove('app__offline');
+        } else {
+            toast('You are now offline...');
+            header.classList.add('app__offline');
+        }
+    };
 
     const hideNativeKeyboard = function(el) {
         el.setAttribute('readonly', 'readonly');
@@ -128,6 +138,9 @@
         }
     });
 
+    window.addEventListener('online', updateNetworkStatus, false);
+    window.addEventListener('offline', updateNetworkStatus, false);
+
     // Methods
     function init() {
         // Check if `currencies` object already exists in DB
@@ -146,6 +159,10 @@
         calculateExchangeRate();
 
         customEventListeners();
+
+        setTimeout(function() {
+            navigator.splashscreen.hide();
+        }, 2000);
     }
 
     function customEventListeners() {
@@ -252,6 +269,8 @@
             scala.style.transform = "scale3d(0,0,0)";
 
             setTimeout(() => {
+                searchField.value = "";
+                searchFilter();
                 searchField.classList.add('hidden');
                 search__hide.classList.add('hidden');
                 searchWrapper.classList.add('hidden');
@@ -260,8 +279,8 @@
 
                 setTimeout(() => {
                     alphapad.classList.add('hidden');
-                }, 600)
-            }, 400);
+                }, 300)
+            }, 200);
         });
 
         // #alphaKeyPad - add listener for pointerdown on alphakeypad keys
@@ -289,8 +308,6 @@
 
                 // set value of the search filter input field
                 searchField.value = event.toElement.dataset.key === 'delete' ? currentValue.slice(0, -1) : currentValue + event.toElement.innerText;
-                //const caretPosition = getComputedStyle(root).getPropertyValue('--cursor-position');
-                //document.querySelector('.caret').style.left = parseInt(caretPosition) + searchField.value.length * 9 + "px";
 
                 searchFilter();
             }
@@ -414,7 +431,7 @@
             const currentValue = inputField.value;
 
             if (currentValue.length > 9) {
-                navigator.vibrate(20, 5, 50);
+                navigator.vibrate([50, 80, 100]);
                 toast("Maximum number of digits (10) exceeded");
             } else {
                 // disable decimal point key
@@ -501,7 +518,7 @@
             })
             .catch(error => {
                 console.log(`The following error occurred while getting the conversion rate. ${error}`);
-                toast('Server is currently not responding. Try again later.')
+                toast('Rates not available. Connect to internet and try again.')
             });
     }
 
@@ -631,18 +648,19 @@
             fetchDatafromIDB(currencyExchange).then(data => {
                 // state 1 : no
                 if (typeof data === 'undefined') {
-                    if (navigator.onLine) {
+                    //if (navigator.onLine) {
+                    if (navigator.connection.type !== "none") {
                         apiFetchExchangeRates(currencyExchange, currencyExchangePair);
                     } else {
                         console.log('Rate is not available offline, turn on your data.');
-                        toast('The rates you requested could not be loaded. Retrying in background');
+                        toast('Requested rate could not be loaded. Retrying in background');
 
                         // retry after 10secs
                         const retrial = setTimeout(() => {
                             calculateExchangeRate();
                         }, 10000);
 
-                        window.addEventListener('online', () => {
+                        document.addEventListener('online', () => {
                             clearTimeout(retrial);
                             calculateExchangeRate();
                         })
