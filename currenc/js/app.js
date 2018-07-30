@@ -45,7 +45,7 @@
     const alphapad = document.getElementById('alphapad');
     const inputField = document.getElementById('convert-from');
     const inputWrapper = document.getElementById('input-wrapper');
-    const searchWrapper = document.getElementById('search-field-wrapper');
+    const searchWrapper = document.querySelector('.search__wrapper');
     const convertTrigger = document.getElementById('do-conversion');
     const convertInfo = document.getElementById('conversion-info');
     const baseCurrencyWrapper = document.getElementById('base-currency-wrapper');
@@ -58,6 +58,10 @@
             header.classList.add('app__offline');
         }
     };
+
+    function onBackKeyDown() {
+        alert("going back");
+    }
 
     const hideNativeKeyboard = function(el) {
         el.setAttribute('readonly', 'readonly');
@@ -76,8 +80,8 @@
 
     const changeFontSize = function(el) {
         const divider = el.value.length > 4 ? (el.value.length < 4 ? false : el.value.length) : false; //get input value
-        let fontSize = 80 - divider * 4; //alter font size depending on string length
-        el.style.fontSize = fontSize < 30 ? `30px` : fontSize + "px"; //set font size
+        let fontSize = 60 - divider * 3; //alter font size depending on string length
+        el.style.fontSize = fontSize < 40 ? `40px` : fontSize + "px"; //set font size
     };
 
     const toTitleCase = function(str) {
@@ -156,13 +160,11 @@
             (yesterday - today === -86400000) ? apiFetchCurrenciesList(): addCurrencyListtoDOM(data.results);
         });
 
+        document.querySelector('.date data').innerHTML = moment().format("MMMM D, YYYY");
+
         calculateExchangeRate();
 
         customEventListeners();
-
-        setTimeout(function() {
-            navigator.splashscreen.hide();
-        }, 2000);
     }
 
     function customEventListeners() {
@@ -201,7 +203,7 @@
                 const currencySymbol = event.target.childNodes["0"].dataset.currencySymbol === 'undefined' ?
                     "" : event.target.childNodes["0"].dataset.currencySymbol;
 
-                __this.innerText = currencyName;
+                __this.querySelector('span').innerText = currencyName;
                 __this.id = currencyID;
 
                 // fixes bug where target currency symbol shows in base currency label
@@ -286,7 +288,7 @@
         // #alphaKeyPad - add listener for pointerdown on alphakeypad keys
         alphaKeyPad.addEventListener('pointerdown', event => {
             // add vibration on key press for mobile
-            navigator.vibrate(40);
+            navigator.vibrate(30);
 
             // remove all the list headers
             if (currency_list_title_visible) {
@@ -315,7 +317,7 @@
 
         // #long-press - detect long press on the alpha keys
         document.addEventListener('long-press', el => {
-            navigator.vibrate(80);
+            navigator.vibrate(40);
 
             el.target.setAttribute('data-editing', 'true');
 
@@ -336,16 +338,16 @@
 
             const currentBaseId = base.id;
             const currentTargetId = converted.id;
-            const currentBaseCurrency = base.innerText;
-            const currentTargetCurrency = converted.innerText;
+            const currentBaseCurrency = base.querySelector('span').innerText;
+            const currentTargetCurrency = converted.querySelector('span').innerText;
             const currentBaseSymbol = document.querySelector('label').innerText;
             const currentTargetSymbol = converted.nextElementSibling.dataset.symbol;
 
             setTimeout(() => {
                 base.id = currentTargetId;
                 converted.id = currentBaseId;
-                base.innerText = currentTargetCurrency;
-                converted.innerText = currentBaseCurrency;
+                base.querySelector('span').innerText = currentTargetCurrency;
+                converted.querySelector('span').innerText = currentBaseCurrency;
                 document.querySelector('label').innerText = currentTargetSymbol;
                 converted.nextElementSibling.dataset.symbol = currentBaseSymbol;
 
@@ -413,13 +415,13 @@
                 inputField.value = numeral(initialValue).format('0,0.00');
 
                 calculateExchangeRate();
-            }, 500);
+            }, 300);
         });
 
         // #numberKeyPad - add listener for pointerdown on keypad keys
         numberKeyPad.addEventListener('pointerdown', event => {
             // add vibration on key press for mobile
-            navigator.vibrate(40);
+            navigator.vibrate(30);
 
             // actions to take during conversion process
             if (event.target.childNodes["0"].dataset.value === 'convert') {
@@ -430,9 +432,9 @@
 
             const currentValue = inputField.value;
 
-            if (currentValue.length > 9) {
-                navigator.vibrate([50, 80, 100]);
-                toast("Maximum number of digits (10) exceeded");
+            if (currentValue.length > 11) {
+                navigator.vibrate([50]);
+                toast("Maximum number of digits (12) exceeded");
             } else {
                 // disable decimal point key
                 if (event.target.childNodes["0"].dataset.value === '.') {
@@ -459,7 +461,7 @@
         });
 
         // #convertTrigger - add listener for pointerdown on the `do-conversion` key
-        convertTrigger.addEventListener('pointerdown', () => {
+        convertTrigger.addEventListener('click', () => {
             //hide keypad
             keypad.classList.remove('slideInUp');
 
@@ -469,6 +471,8 @@
             //do the conversion calculation
             calculateExchangeRate();
         });
+
+        document.addEventListener("backbutton", onBackKeyDown, false);
     }
 
     // Fetch currencies from API url
@@ -478,6 +482,8 @@
             })
             .then(response => response.json())
             .then(data => {
+                //console.log(data);
+                //return;
                 data.date_log = new Date().setHours(0, 0, 0, 0);
 
                 // Save currency list to IndexedDB for offline access
@@ -653,7 +659,7 @@
                         apiFetchExchangeRates(currencyExchange, currencyExchangePair);
                     } else {
                         console.log('Rate is not available offline, turn on your data.');
-                        toast('Requested rate could not be loaded. Retrying in background');
+                        toast('Requested rate could not be loaded, retrying in background');
 
                         // retry after 10secs
                         const retrial = setTimeout(() => {
@@ -669,7 +675,8 @@
                 // state 2 : yes
                 else {
                     convertedCurrency = amountToConvert * data;
-                    convertCurrencyToField.innerText = numeral(convertedCurrency).format('0,0.00');
+                    // convertCurrencyToField.innerHTML = `<span>${targetCurrency}</span> ` + numeral(convertedCurrency).format('0,0.00');
+                    convertCurrencyToField.innerHTML = numeral(convertedCurrency).format('0,0.00');
                     convertInfo.innerText = `1 ${baseCurrency} = ${targetCurrency} ${data}`;
 
                     loader.classList.remove('show');

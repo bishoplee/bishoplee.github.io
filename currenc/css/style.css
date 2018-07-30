@@ -34,13 +34,14 @@
     --cursor-position: 80px;
     --brand-color: #cf4647;
     --text-case: lowercase;
-    --input-font-size: 80px;
+    --input-font-size: 60px;
 }
 
 *,
 *::after,
 *::before {
     box-sizing: border-box;
+    position: relative;
 }
 
 html,
@@ -92,11 +93,17 @@ body {
     background: var(--brand-color);
 }
 
+.app {
+    margin-top: 24px;
+}
+
 .app__layout {
     width: 100%;
-    height: calc(100vh - 56px);
-    padding-top: 24px;
-    position: relative;
+    height: calc(100vh - 24px);
+}
+
+.brand__color {
+    color: var(--brand-color)!important;
 }
 
 #exchange-main-container {
@@ -129,10 +136,15 @@ body {
     height: 120px;
     margin: 0 auto;
     line-height: 120px;
-    font-size: 300%;
+    font-size: 250%;
     font-weight: 100;
     color: #ee4e52;
     text-align: center;
+}
+
+#converted-to span {
+    font-size: 14px;
+    font-weight: 400;
 }
 
 #conversion-info {
@@ -140,8 +152,8 @@ body {
     text-align: center;
     width: auto;
     height: auto;
-    color: #ee4e52;
-    font-size: 13px;
+    color: #e59aa3;
+    font-size: .75rem;
     letter-spacing: 2px;
     transform: translateY(-24px);
 }
@@ -177,7 +189,8 @@ header {
     opacity: 1;
 }
 
-#currencies-list .header {
+#currencies-list .header,
+#currencies-list .search__wrapper {
     height: 56px;
     position: fixed;
     width: 96%;
@@ -191,18 +204,16 @@ header {
     box-shadow: 0 0 15px -5px rgba(208, 70, 71, 0.9);
 }
 
-#currencies-list .header>.back__button,
-#currencies-list .header .back__button {
+#currencies-list .back__button {
     height: 48px;
     width: 48px;
-    position: relative;
     margin: 4px;
     display: block;
     cursor: pointer;
+    z-index: 305;
 }
 
-#currencies-list .header>.back__button::before,
-#currencies-list .header .back__button::before {
+#currencies-list .back__button::before {
     content: "";
     position: absolute;
     width: 24px;
@@ -213,8 +224,7 @@ header {
     transform: translateX(-50%);
 }
 
-#currencies-list .header>.back__button::after,
-#currencies-list .header .back__button::after {
+#currencies-list .back__button::after {
     content: "";
     position: absolute;
     width: 12px;
@@ -224,18 +234,18 @@ header {
     transform: rotate(45deg) translateX(190%) translateY(30%);
 }
 
-#currencies-list .header #search-field-wrapper>.back__button::before,
-#currencies-list .header #search-field-wrapper>.back__button::after {
+#currencies-list #search-field-wrapper>.back__button::before,
+#currencies-list #search-field-wrapper>.back__button::after {
     border-color: #fff;
 }
 
 #currencies-list .header span.search__button {
     height: 48px;
     width: 48px;
-    position: relative;
     margin: 4px;
-    display: block;
+    display: inline-block;
     cursor: pointer;
+    margin-left: auto;
 }
 
 #currencies-list .header span.search__button::before {
@@ -259,11 +269,11 @@ header {
     border-radius: 100%;
 }
 
-#currencies-list .header .search__wrapper {
-    margin-left: auto;
+#currencies-list .search__wrapper {
+    z-index: 302;
 }
 
-#currencies-list .header .search__wrapper .search__field {
+#currencies-list .search__wrapper .search__field {
     top: 0;
     height: 100%;
     width: 100%;
@@ -275,7 +285,7 @@ header {
     font-size: 18px;
     color: #fff;
     outline: none;
-    z-index: 1;
+    z-index: 303;
 }
 
 #currencies-list #search-field-wrapper {
@@ -345,7 +355,6 @@ header {
     cursor: pointer;
     padding: 8px;
     border-bottom: 1px solid #f9e0e1;
-    position: relative;
 }
 
 #currencies-list ul.currencies li.currency_list_title {
@@ -389,7 +398,7 @@ header {
 }
 
 .base__currency #input-wrapper {
-    width: 320px;
+    width: 96%;
     display: block;
     margin: 0 auto;
 }
@@ -444,15 +453,12 @@ header {
     height: 48px;
     margin: 16px auto;
     color: #f9e0e1;
-    line-height: 48px;
     border: 2px solid #fecdd2;
     cursor: pointer;
     border-radius: 53px;
-    position: relative;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    letter-spacing: 0.1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .base__currency__name::after,
@@ -467,6 +473,15 @@ header {
     transform: rotate(45deg);
     top: 21px;
     right: 20px;
+}
+
+.base__currency__name span,
+.converted__currency__name span {
+    width: 240px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.1em;
 }
 
 .converted__currency__name::after {
@@ -541,7 +556,7 @@ label {
 }
 
 #switch-button {
-    top: 50%;
+    top: calc(50% + 56px);
     left: 50%;
     display: flex;
     align-items: center;
@@ -552,15 +567,10 @@ label {
     background: #fff;
     border-radius: 50%;
     z-index: 200;
-    margin-top: -45px;
+    margin-top: -73px;
     margin-left: -45px;
     box-shadow: 0 0 15px 5px rgba(208, 70, 71, 0.25);
     transition: all 0.5s ease;
-    will-change: transform;
-}
-
-#switch-button:hover {
-    box-shadow: 0 0 15px 5px rgba(208, 70, 71, 0.65);
 }
 
 #switch-button.rotate {
@@ -599,7 +609,6 @@ label {
 #keypad .header .close__button {
     height: 48px;
     width: 48px;
-    position: relative;
     display: inline-flex;
     cursor: pointer;
     border: none;
@@ -713,7 +722,7 @@ svg .fil0 {
     grid-template-columns: auto auto auto;
     padding: 0 8px 0;
     height: calc(100% - 184px);
-    margin: 184px auto 0;
+    margin: 210px auto 0;
     max-width: 400px;
 }
 
@@ -830,13 +839,20 @@ header svg {
     letter-spacing: 2px;
     font-size: 24px;
     align-self: center;
+    margin: 0;
+}
+
+.header__title span {
+    font-size: 0.75rem;
+    display: block;
+    font-weight: 100;
+    letter-spacing: .1rem;
 }
 
 .app__content {
-    position: relative;
     min-width: 320px;
     height: 100%;
-    margin: 56px auto 0;
+    padding-top: 56px;
 }
 
 .toast__container {
@@ -915,6 +931,19 @@ header svg {
 
 
 /* Ripple */
+
+@media screen and (max-width: 320px) {
+     :root {
+        --cursor-position: 60px;
+        --input-font-size: 50px;
+    }
+    .header__title {
+        font-size: 1rem!important;
+    }
+    #converted-to {
+        font-size: 200%!important
+    }
+}
 
 @media screen and (max-width: 768px) {
     .header__title {
