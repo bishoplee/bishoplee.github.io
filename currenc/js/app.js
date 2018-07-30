@@ -11,6 +11,7 @@
     let decimalTrigger = '';
     let initialValue = '';
     let currency_list_title_visible = true;
+    let defaultCountries = ['NGN', 'GHS', 'KES', 'GBP', 'XAF', 'CNY', 'JPY', 'EUR', 'XOF', 'ZAR'];
 
     const idbName = "currenc";
     const currenciesAPI_URL = 'https://free.currencyconverterapi.com/api/v5/currencies';
@@ -80,7 +81,7 @@
 
     const changeFontSize = function(el) {
         const divider = el.value.length > 4 ? (el.value.length < 4 ? false : el.value.length) : false; //get input value
-        let fontSize = 60 - divider * 3; //alter font size depending on string length
+        let fontSize = 60 - divider * 1.5; //alter font size depending on string length
         el.style.fontSize = fontSize < 40 ? `40px` : fontSize + "px"; //set font size
     };
 
@@ -358,20 +359,19 @@
         });
 
         // #baseCurrencyWrapper - add listener for pointerdown on touch area for keypad trigger
-        baseCurrencyWrapper.addEventListener('pointerdown', event => {
-            if (event.target.id.match('base-currency-wrapper') || event.target.id.match('convert-from')) {
-                // hide native key[pad || board]s
-                hideNativeKeyboard(inputField);
-                // move input field up in the DOM
-                inputWrapper.classList.add('moveUp');
-                // reveal custom keypad
-                keypad.classList.add('slideInUp');
-                // disable future event on this area
-                baseCurrencyWrapper.classList.add('disabled');
-                // clear input field value
-                initialValue = inputField.value;
-                inputField.value = "";
-            }
+        inputWrapper.addEventListener('pointerdown', event => {
+            // hide native key[pad || board]s
+            hideNativeKeyboard(inputField);
+            // move input field up in the DOM
+            inputWrapper.classList.add('moveUp');
+            // reveal custom keypad
+            keypad.classList.add('slideInUp');
+            // disable future event on this area
+            baseCurrencyWrapper.classList.add('disabled');
+            // clear input field value
+            initialValue = inputField.value;
+            inputField.value = "";
+            inputField.placeholder = 0;
         });
 
         // #inputField - allow numbers and decimal point only, applicable to desktop
@@ -675,8 +675,8 @@
                 // state 2 : yes
                 else {
                     convertedCurrency = amountToConvert * data;
-                    // convertCurrencyToField.innerHTML = `<span>${targetCurrency}</span> ` + numeral(convertedCurrency).format('0,0.00');
-                    convertCurrencyToField.innerHTML = numeral(convertedCurrency).format('0,0.00');
+                    convertCurrencyToField.innerHTML = numeral(convertedCurrency).format('0,0.00') + `<span>${targetCurrency}</span>`;
+                    // convertCurrencyToField.innerHTML = numeral(convertedCurrency).format('0,0.00');
                     convertInfo.innerText = `1 ${baseCurrency} = ${targetCurrency} ${data}`;
 
                     loader.classList.remove('show');

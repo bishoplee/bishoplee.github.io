@@ -124,18 +124,14 @@ body {
 #converted-currency-wrapper {
     background: #fcf9fa;
     height: 50%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
 }
 
 #converted-to {
     display: block;
     width: 100%;
-    height: 120px;
+    height: 160px;
     margin: 0 auto;
-    line-height: 120px;
+    padding-top: 64px;
     font-size: 250%;
     font-weight: 100;
     color: #ee4e52;
@@ -145,6 +141,9 @@ body {
 #converted-to span {
     font-size: 14px;
     font-weight: 400;
+    display: block;
+    color: #e59aa3;
+    letter-spacing: 1.5px;
 }
 
 #conversion-info {
@@ -152,10 +151,9 @@ body {
     text-align: center;
     width: auto;
     height: auto;
-    color: #e59aa3;
+    color: #a2a2a2;
     font-size: .75rem;
     letter-spacing: 2px;
-    transform: translateY(-24px);
 }
 
 header {
@@ -395,12 +393,14 @@ header {
 
 .base__currency {
     text-align: center;
+    height: 100%;
 }
 
 .base__currency #input-wrapper {
     width: 96%;
     display: block;
     margin: 0 auto;
+    height: calc(100% - 80px);
 }
 
 .base__currency #input-wrapper.moveUp {
@@ -444,6 +444,10 @@ header {
     color: #FCF9FA;
     font-family: 'Encode Sans Condensed', sans-serif;
     font-weight: 100;
+}
+
+.base__currency #input-wrapper input::placeholder {
+    color: #fff;
 }
 
 .base__currency__name,
@@ -503,8 +507,12 @@ label {
 }
 
 .converted__currency {
-    display: block;
     width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
 }
 
 .converted__currency__name {
@@ -941,7 +949,8 @@ header svg {
         font-size: 1rem!important;
     }
     #converted-to {
-        font-size: 200%!important
+        font-size: 200%!important;
+        height: 150px;
     }
 }
 

@@ -15,7 +15,6 @@
     <meta name="msapplication-TileColor" content="#cf4647">
 
     <link rel="stylesheet" type="text/css" href="css/style.css">
-    <script async src="https://cdn.jsdelivr.net/npm/pwacompat@2.0.6/pwacompat.min.js" integrity="sha384-GOaSLecPIMCJksN83HLuYf9FToOiQ2Df0+0ntv7ey8zjUHESXhthwvq9hXAZTifA" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -34,19 +33,19 @@
             <div class="app__content">
                 <div id="exchange-main-container">
                     <div id="base-currency-wrapper" class="pointer">
-                        <div class="base__currency relative">
+                        <div class="base__currency">
                             <div class="base__currency__name" id="USD">
                                 <span>United States Dollar</span>
                             </div>
-                            <div id="input-wrapper" class="relative">
+                            <div id="input-wrapper" class="">
                                 <input type="text" id="convert-from" name="convert-from" value="100" class="pointer">
-                                <label class="absolute" for="convert-from">$</label>
+                                <label class="absolute hidden" for="convert-from">$</label>
                             </div>
                         </div>
                     </div>
 
                     <div id="converted-currency-wrapper">
-                        <div class="converted__currency relative">
+                        <div class="converted__currency">
                             <span id="converted-to"></span>
                             <span id="conversion-info"></span>
                             <div class="converted__currency__name" id="NGN">
@@ -104,17 +103,18 @@
                     </button>
                     </div>
                     <ul class="number__keypad">
-                        <li class="key"><a data-value="1">1</a></li>
-                        <li class="key"><a data-value="2">2</a></li>
-                        <li class="key"><a data-value="3">3</a></li>
-                        <li class="key"><a data-value="4">4</a></li>
-                        <li class="key"><a data-value="5">5</a></li>
-                        <li class="key"><a data-value="6">6</a></li>
                         <li class="key"><a data-value="7">7</a></li>
                         <li class="key"><a data-value="8">8</a></li>
                         <li class="key"><a data-value="9">9</a></li>
-                        <li class="key"><a data-value=".">.</a></li>
+                        <li class="key"><a data-value="4">4</a></li>
+                        <li class="key"><a data-value="5">5</a></li>
+                        <li class="key"><a data-value="6">6</a></li>
+                        <li class="key"><a data-value="1">1</a></li>
+                        <li class="key"><a data-value="2">2</a></li>
+                        <li class="key"><a data-value="3">3</a></li>
+                        <li class="key"><a data-value="00">00</a></li>
                         <li class="key"><a data-value="0">0</a></li>
+                        <li class="key"><a data-value=".">.</a></li>
                         <li id="do-conversion" class="key"><a data-value="convert" class="relative"><span></span></a></li>
                     </ul>
                 </div>
