@@ -170,7 +170,7 @@ header {
 }
 
 #currencies-list {
-    transition: transform 0.3s cubic-bezier(0, 0, 0.30, 1);
+    transition: all 0.3s cubic-bezier(0, 0, 0.30, 1);
     will-change: transform;
     position: fixed;
     z-index: 300;
@@ -179,12 +179,12 @@ header {
     transform: translateX(105%);
     height: 100%;
     width: 100%;
-    opacity: 0;
+    /* opacity: 0; */
 }
 
 #currencies-list.open {
     transform: translateX(0);
-    opacity: 1;
+    /* opacity: 1; */
 }
 
 #currencies-list .header,
@@ -359,6 +359,8 @@ header {
     pointer-events: none;
     height: 56px;
     line-height: 56px;
+    font-weight: 600;
+    color: #989292;
 }
 
 #currencies-list ul.currencies li.active::after {
@@ -409,12 +411,13 @@ header {
     left: 50%;
     transform: translateX(-50%);
     top: 0;
-    animation: move-up .45s cubic-bezier(1, 0, 0.30, 1);
+    animation: move-up .25s ease-in;
+    /* cubic-bezier(1, 0, 0.30, 1); */
 }
 
 @keyframes move-up {
     0% {
-        top: 80px;
+        top: 100px;
     }
     100% {
         top: 0;
@@ -422,18 +425,19 @@ header {
 }
 
 .base__currency #input-wrapper label {
-    transform: translateX(-50%) translateY(-50%);
-    bottom: 0;
-    left: 0;
+    transform: translateX(-50%) translateY(-16px);
+    top: 115px;
+    left: 50%;
     color: #fff;
-    font-size: 28px;
-    width: 64px;
-    height: 64px;
+    font-size: 14px;
+    width: 100%;
+    height: 16px;
     text-align: center;
-    line-height: 80px;
+    letter-spacing: 1.5px;
 }
 
-.base__currency #input-wrapper input {
+.base__currency #input-wrapper input,
+.base__currency .entries {
     font-size: var(--input-font-size);
     width: 100%;
     height: 115px;
@@ -450,6 +454,16 @@ header {
     color: #fff;
 }
 
+.base__currency #input-wrapper.moveUp input {
+    color: transparent;
+}
+
+.base__currency #input-wrapper .entries {
+    display: block;
+    position: absolute;
+    padding-top: 20px;
+}
+
 .base__currency__name,
 .converted__currency__name {
     width: 300px;
@@ -461,8 +475,6 @@ header {
     cursor: pointer;
     border-radius: 53px;
     display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .base__currency__name::after,
@@ -486,6 +498,7 @@ header {
     overflow: hidden;
     text-overflow: ellipsis;
     letter-spacing: 0.1em;
+    margin: auto;
 }
 
 .converted__currency__name::after {
@@ -567,8 +580,6 @@ label {
     top: calc(50% + 56px);
     left: 50%;
     display: flex;
-    align-items: center;
-    justify-content: center;
     width: 90px;
     height: 90px;
     border: 5px solid var(--brand-color);
@@ -601,6 +612,7 @@ label {
     padding: 0 0 72px;
     display: none;
     will-change: display;
+    transition: all .95s ease;
 }
 
 #keypad .header {
@@ -631,6 +643,11 @@ label {
     pointer-events: none;
 }
 
+[data-reset=delete] svg {
+    background: #613c3c;
+    border-radius: 50%;
+}
+
 svg .fil1 {
     fill: none
 }
@@ -638,6 +655,11 @@ svg .fil1 {
 svg .fil0 {
     fill: #fff;
     fill-rule: nonzero
+}
+
+svg .cls-1 {
+    fill: #fff;
+    fill-rule: evenodd;
 }
 
 #alphapad {
@@ -692,6 +714,21 @@ svg .fil0 {
     text-transform: var(--text-case);
 }
 
+#do-conversion {
+    bottom: -20vh;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 80px;
+}
+
+#do-conversion a {
+    width: 64px;
+    height: 64px;
+    background: #ef7176;
+    border-color: #fff;
+}
+
 .keyboard__row:nth-child(2) {
     padding: 2px 18px!important;
 }
@@ -727,10 +764,10 @@ svg .fil0 {
 .number__keypad {
     display: grid;
     grid-auto-flow: row;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: auto auto auto auto auto;
     padding: 0 8px 0;
-    height: calc(100% - 184px);
-    margin: 210px auto 0;
+    height: 40vh;
+    margin: 280px auto 0;
     max-width: 400px;
 }
 
@@ -745,12 +782,31 @@ svg .fil0 {
 }
 
 .number__keypad .key a {
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: 50%;
-    width: 64px;
+    width: 60px;
     height: 64px;
-    background: #d6444d;
     pointer-events: none;
+}
+
+.number__keypad .key.having__border a {
+    /* border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    background: #d6444d; */
+    border: 1px solid rgba(241, 165, 165, 0.68);
+    border-radius: 50%;
+    background: #f75353;
+    width: 52px;
+    height: 52px;
+}
+
+.number__keypad .key.stretched {
+    grid-column: 4 / 6;
+    grid-row: 3 / 4;
+}
+
+.number__keypad .key.stretched a {
+    height: 56px;
+    width: 85%;
+    border-radius: 50px;
 }
 
 .number__keypad .key:last-of-type a span {
@@ -759,32 +815,37 @@ svg .fil0 {
     width: 24px;
     height: 8px;
     border: none;
-    border-bottom: 2px solid #ffffff;
-    border-left: 2px solid #ffffff;
+    border-bottom: 2px solid #fdf7f8;
+    border-left: 2px solid #fdf7f8;
     transform: rotate(-45deg);
     top: 40%;
     right: 18px;
 }
 
 .loader {
-    bottom: 25%;
-    left: 50%;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
+    width: 100%;
+    height: 22%;
     display: none;
+    transform: translateY(-175%);
 }
 
 .loader.show {
     /*background-color:#46494b;animation:sonarLoading 1s linear infinite;*/
-    display: block;
+    background: #fcf9fa;
+    display: flex;
+}
+
+.ball-scale-multiple {
+    margin: auto;
+    width: 60px;
+    height: 60px;
 }
 
 .ball-scale-multiple>div {
     background-color: #46494b;
     border-radius: 100%;
     position: absolute;
-    left: -30px;
+    left: 0;
     top: 0;
     opacity: 0;
     margin: 0;
@@ -951,6 +1012,12 @@ header svg {
     #converted-to {
         font-size: 200%!important;
         height: 150px;
+    }
+    .base__currency #input-wrapper label {
+        top: 104px;
+    }
+    .number__keypad {
+        margin: 240px auto 0;
     }
 }
 

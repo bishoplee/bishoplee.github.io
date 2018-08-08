@@ -7,21 +7,27 @@
         return;
     }
 
+    let activated = false;
     let __this = '';
     let decimalTrigger = '';
     let initialValue = '';
     let currency_list_title_visible = true;
     let defaultCountries = ['NGN', 'GHS', 'KES', 'GBP', 'XAF', 'CNY', 'JPY', 'EUR', 'XOF', 'ZAR'];
+    let retrialTimeOut = 0;
+    let newValue = '';
+    let realNumber = '';
+    let answer = 0;
+    let memory = false;
 
     const idbName = "currenc";
     const currenciesAPI_URL = 'https://free.currencyconverterapi.com/api/v5/currencies';
     const exchangeRateAPI_URL = "https://free.currencyconverterapi.com/api/v5/convert";
+    const today = String(moment().format("MMMM D, YYYY"));
 
     const header = document.querySelector('header');
     const currencyListContainer = document.querySelector('#currencies-list');
     const currencyList = document.querySelector('#currencies-list ul');
     const loader = document.querySelector('.loader');
-    const body = document.querySelector('body');
     const base = document.querySelector('.base__currency__name');
     const converted = document.querySelector('.converted__currency__name');
     const currencies = document.querySelector('.currencies');
@@ -32,6 +38,7 @@
     const alphaKeyPadClose = document.querySelector('#search-field-wrapper .back__button');
     const numberKeyPad = document.querySelector('.number__keypad');
     const alphaKeyPad = document.querySelector('.keyboard');
+    const calculatorScreen = document.querySelector('.entries');
 
     const caret = "<span class='caret'></span>";
     searchField.insertAdjacentHTML('afterend', caret);
@@ -52,11 +59,14 @@
     const baseCurrencyWrapper = document.getElementById('base-currency-wrapper');
 
     const updateNetworkStatus = function() {
-        if (navigator.connection.type !== "none") {
-            header.classList.remove('app__offline');
-        } else {
-            toast('You are now offline...');
+        if ((navigator.connection.type === "none") || (window.navigator.onLine === false)) {
+            //toast('You are now offline...');
             header.classList.add('app__offline');
+        } else {
+            header.classList.remove('app__offline');
+            setInterval(() => {
+                calculateExchangeRate();
+            }, 1800000);
         }
     };
 
@@ -66,21 +76,13 @@
 
     const hideNativeKeyboard = function(el) {
         el.setAttribute('readonly', 'readonly');
-
-        if (navigator.userAgent.indexOf("Mobile") > 0) {
-            el.blur();
-            el.removeAttribute('readonly');
-            return true;
-        } else {
-            setTimeout(() => {
-                el.removeAttribute('readonly');
-                el.focus();
-            }, 10);
-        }
+        el.blur();
+        el.removeAttribute('readonly');
+        return true;
     };
 
     const changeFontSize = function(el) {
-        const divider = el.value.length > 4 ? (el.value.length < 4 ? false : el.value.length) : false; //get input value
+        const divider = el.innerText.length > 4 ? (el.innerText.length < 4 ? false : el.innerText.length) : false; //get input value
         let fontSize = 60 - divider * 1.5; //alter font size depending on string length
         el.style.fontSize = fontSize < 40 ? `40px` : fontSize + "px"; //set font size
     };
@@ -136,6 +138,50 @@
         }
     };
 
+    const disableOps = () => {
+        Array.prototype.forEach.call(document.querySelectorAll('.ops'), (el) => {
+            el.parentNode.classList.remove('enabled');
+            setTimeout(() => {
+                el.parentNode.classList.add('disabled');
+            }, 100);
+            activated = false;
+        });
+    }
+
+    const triggeredOn = (els, r, a) => {
+        Array.prototype.forEach.call(document.querySelectorAll(els), (el) => {
+            el.classList.remove(r);
+            setTimeout(() => {
+                el.classList.add(a);
+            }, 100);
+        });
+    }
+
+    const calculator = (n, op) => {
+        switch (op) {
+            case "divide":
+                realNumber = realNumber + "/";
+                break;
+
+            case "multiply":
+                realNumber = realNumber + "*";
+                break;
+
+            case "add":
+                realNumber = realNumber + "+";
+                break;
+
+            case "minus":
+                realNumber = realNumber + "-";
+                break;
+
+            default:
+                answer = parseFloat(eval(realNumber).toPrecision(12));
+                memory = true;
+                break;
+        }
+    }
+
     const idbPromise = idb.open(idbName, 1, function(upgradeDB) {
         console.log("Making a new object store to hold currencies list of all countries.");
         if (!upgradeDB.objectStoreNames.contains('currencyConverter')) {
@@ -148,20 +194,23 @@
 
     // Methods
     function init() {
-        // Check if `currencies` object already exists in DB
+        document.querySelector('.date data').innerHTML = today;
+
+        updateNetworkStatus();
+
         fetchDatafromIDB('currencies').then(data => {
             if (typeof data === 'undefined') {
                 apiFetchCurrenciesList();
-                return;
+            } else {
+                const yesterday = data.date_log;
+
+                if (yesterday === today) {
+                    addCurrencyListtoDOM(data.results);
+                } else {
+                    apiFetchCurrenciesList();
+                }
             }
-
-            const today = new Date().setHours(0, 0, 0, 0);
-            const yesterday = data.date_log ? data.date_log : 86400000;
-
-            (yesterday - today === -86400000) ? apiFetchCurrenciesList(): addCurrencyListtoDOM(data.results);
         });
-
-        document.querySelector('.date data').innerHTML = moment().format("MMMM D, YYYY");
 
         calculateExchangeRate();
 
@@ -169,19 +218,6 @@
     }
 
     function customEventListeners() {
-        // detect if 'enter' key is pressed
-        body.addEventListener('keydown', event => {
-            if (event.keyCode === 13) {
-                // restore keypad to default state
-                keypad.classList.remove('slideInUp');
-                // restore input to original position
-                inputWrapper.classList.remove('moveUp');
-
-                // do the conversion
-                calculateExchangeRate();
-            }
-        });
-
         // #base - add listener for click on base currency selection
         base.addEventListener('click', () => {
             currencyListContainer.classList.add('open');
@@ -209,7 +245,7 @@
 
                 // fixes bug where target currency symbol shows in base currency label
                 if (__this === base) {
-                    document.querySelector('label').innerText = currencySymbol;
+                    document.querySelector('label').innerText = currencyID;
                 } else {
                     converted.nextElementSibling.dataset.symbol = currencySymbol;
                 }
@@ -288,29 +324,31 @@
 
         // #alphaKeyPad - add listener for pointerdown on alphakeypad keys
         alphaKeyPad.addEventListener('pointerdown', event => {
-            // add vibration on key press for mobile
-            navigator.vibrate(30);
+            if (event.target.className !== "keyboard__row") {
+                // add vibration on key press for mobile
+                navigator.vibrate(30);
 
-            // remove all the list headers
-            if (currency_list_title_visible) {
-                Array.prototype.forEach.call(currencyList.querySelectorAll('.currency_list_title'), (el) => {
-                    el.classList.add('hidden');
-                });
-            }
+                // remove all the list headers
+                if (currency_list_title_visible) {
+                    Array.prototype.forEach.call(currencyList.querySelectorAll('.currency_list_title'), (el) => {
+                        el.classList.add('hidden');
+                    });
+                }
 
-            // retrieve current search input value
-            const currentValue = searchField.value;
-            const root = document.querySelector(':root');
+                // retrieve current search input value
+                const currentValue = searchField.value;
+                const root = document.querySelector(':root');
 
-            if (event.toElement.className !== "keyboard__row") {
+                //console.log(event.target);
+
                 // shift case toggle from lower to upper and vise-versa
-                if (event.toElement.dataset.key === 'shift') {
+                if (event.target.dataset.key === 'shift') {
                     const shiftCase = getComputedStyle(root).getPropertyValue('--text-case');
                     (shiftCase === "lowercase") ? root.style.setProperty('--text-case', 'uppercase'): root.style.setProperty('--text-case', 'lowercase');
                 }
 
                 // set value of the search filter input field
-                searchField.value = event.toElement.dataset.key === 'delete' ? currentValue.slice(0, -1) : currentValue + event.toElement.innerText;
+                searchField.value = event.target.dataset.key === 'delete' ? currentValue.slice(0, -1) : currentValue + event.target.innerText;
 
                 searchFilter();
             }
@@ -349,7 +387,7 @@
                 converted.id = currentBaseId;
                 base.querySelector('span').innerText = currentTargetCurrency;
                 converted.querySelector('span').innerText = currentBaseCurrency;
-                document.querySelector('label').innerText = currentTargetSymbol;
+                document.querySelector('label').innerText = currentTargetId;
                 converted.nextElementSibling.dataset.symbol = currentBaseSymbol;
 
                 switchButton.classList.remove('rotate');
@@ -372,28 +410,6 @@
             initialValue = inputField.value;
             inputField.value = "";
             inputField.placeholder = 0;
-        });
-
-        // #inputField - allow numbers and decimal point only, applicable to desktop
-        inputField.addEventListener('keydown', e => {
-            const key = e.keyCode ? e.keyCode : e.which;
-
-            // 8 : 'Backspace', 9 : '', 13 : 'Enter', 27 : '', 46 : 'Delete', 110 : 'NumpadDecimal', 190 : 'Period'
-            if (!([8, 9, 13, 27, 46, 110, 190].indexOf(key) !== -1 ||
-                    (key === 65 && (e.ctrlKey || e.metaKey)) ||
-                    (key >= 35 && key <= 40) ||
-                    (key >= 48 && key <= 57 && !(e.shiftKey || e.altKey)) ||
-                    (key >= 96 && key <= 105)
-                )) e.preventDefault();
-
-            // prevents a second decimal point
-            if ((key !== 190 || this.value.indexOf('.') !== -1) &&
-                (key !== 110 || this.value.indexOf('.') !== -1) &&
-                ((key < 48 && key !== 8) ||
-                    (key > 57 && key < 96) ||
-                    key > 105)) e.preventDefault();
-
-            changeFontSize(inputField);
         });
 
         // #inputField - show or hide cursor when inputField focus()
@@ -423,45 +439,111 @@
             // add vibration on key press for mobile
             navigator.vibrate(30);
 
-            // actions to take during conversion process
-            if (event.target.childNodes["0"].dataset.value === 'convert') {
+            if (memory) {
+                calculatorScreen.innerText = "";
+                newValue = "";
+                realNumber = "";
+                answer = 0;
+                memory = false;
+            }
+
+            // disable accidental trigger when parent ul is touched
+            if (event.target.classList.contains('number__keypad') || event.target.children["0"].dataset.ops === 'convert') {
                 return;
             }
 
-            // retrieve current input value
+            // construct new value to be added to DOM
+            if (event.target.children["0"].dataset.value) {
+                newValue = answer > 0 ? event.target.children["0"].dataset.value : calculatorScreen.innerText + event.target.children["0"].dataset.value;
+                realNumber += isNaN(parseInt(event.target.children["0"].dataset.value)) ? '' : event.target.children["0"].dataset.value;
 
-            const currentValue = inputField.value;
-
-            if (currentValue.length > 11) {
-                navigator.vibrate([50]);
-                toast("Maximum number of digits (12) exceeded");
-            } else {
-                // disable decimal point key
-                if (event.target.childNodes["0"].dataset.value === '.') {
-                    event.target.classList.add('disabled');
-                    decimalTrigger = event.target;
+                if (!activated) {
+                    triggeredOn('li.key.disabled', 'disabled', 'enabled');
+                    activated = true;
                 }
 
-                // construct new value to be added to DOM
-                const newValue = event.target.childNodes["0"].dataset.value === 'delete' ? currentValue.slice(0, -1) : currentValue + event.target.childNodes["0"].dataset.value;
+                // disable decimal point key when clicked for the first time
+                if (event.target.children["0"].dataset.value === '.') {
+                    realNumber = realNumber + ".";
+                    setTimeout(() => {
+                        event.target.classList.add('disabled');
+                        decimalTrigger = event.target;
+                    }, 100);
+                }
+            }
 
-                // check if new value contains decimal point when value is being deleted
-                if (event.target.childNodes["0"].dataset.value === 'delete' && decimalTrigger !== '') {
-                    if (newValue.indexOf('.') === -1) {
+            if (newValue.length > 15) {
+                navigator.vibrate([50]);
+                //toast("Maximum number of digits (12) exceeded");
+            } else {
+                // construct new value to be added to DOM when a digit is deleted
+                if (event.target.children["0"].dataset.reset === 'delete') {
+                    if (!activated) {
+                        triggeredOn('li.key.disabled', 'disabled', 'enabled');
+                    }
+
+                    newValue = (newValue === "") ? '' : newValue.slice(0, -1);
+                    realNumber = (realNumber === "") ? '' : realNumber.slice(0, -1);
+                }
+
+                // clear values when 'c' button is clicked
+                if (event.target.children["0"].dataset.reset === 'clear') {
+                    newValue = "";
+                    realNumber = "";
+                    answer = 0;
+
+                    triggeredOn('li.key.enabled', 'enabled', 'disabled');
+                    activated = false;
+
+                    if (decimalTrigger !== "") {
                         decimalTrigger.classList.remove('disabled');
+                        decimalTrigger = "";
                     }
                 }
 
-                inputField.value = newValue;
+                // if newValue is empty
+                if (newValue === "") {
+                    if (activated) {
+                        triggeredOn('li.key.enabled', 'enabled', 'disabled');
+                        activated = false;
+                    }
+                    if (decimalTrigger !== "") {
+                        decimalTrigger.classList.remove('disabled');
+                        decimalTrigger = "";
+                    }
+                }
+
+                // Add click event to operators
+                if (event.target.children["0"].dataset.ops) {
+                    disableOps();
+                    calculator(realNumber, event.target.children["0"].dataset.ops);
+                }
+
+                // do the arithmetic when 'equals' button is clicked
+                if (event.target.children["0"].dataset.reset === 'equals') {
+                    calculator(0, event.target.children["0"].dataset.reset);
+                }
+
+                inputField.value = (answer > 0) ? answer : realNumber;
+                if (answer > 0) {
+                    calculatorScreen.innerText = answer;
+                } else {
+                    calculatorScreen.innerText = newValue;
+                }
+
+                console.log(inputField.value);
 
                 hideNativeKeyboard(inputField);
 
-                changeFontSize(inputField);
+                changeFontSize(calculatorScreen);
             }
         });
 
         // #convertTrigger - add listener for pointerdown on the `do-conversion` key
         convertTrigger.addEventListener('click', () => {
+            triggeredOn('li.key.enabled', 'enabled', 'disabled');
+            activated = false;
+
             //hide keypad
             keypad.classList.remove('slideInUp');
 
@@ -482,9 +564,7 @@
             })
             .then(response => response.json())
             .then(data => {
-                //console.log(data);
-                //return;
-                data.date_log = new Date().setHours(0, 0, 0, 0);
+                data.date_log = today; //new Date().setHours(0, 0, 0, 0);
 
                 // Save currency list to IndexedDB for offline access
                 saveCurrenciesListtoIDB('currencies', data);
@@ -495,13 +575,13 @@
                 console.error(
                     `The following error occurred while fetching the list of currencies. ${error}`
                 );
-                fetchDatafromIDB('currencies').then(currencies => {
-                    if (typeof currencies === 'undefined') {
-                        toast("You\'re offline - some features are unavailable.");
-                    } else {
-                        addCurrencyListtoDOM(currencies);
-                    }
-                });
+                /* const li = document.createElement("li");
+
+                li.className = "currency_list_title";
+                li.innerHTML = "You are offline. Connect to internet."; */
+
+                currencyList.innerHTML = "<li>You are offline. Connect to internet.</li>";
+                //toast("You are offline. Connect to internet");
             });
     }
 
@@ -520,11 +600,46 @@
                 saveCurrencyConversionRatetoIDB(pair1, exchangeRates[0]);
                 saveCurrencyConversionRatetoIDB(pair2, exchangeRates[1]);
 
+                //TODO: send values off to server
+
                 calculateExchangeRate();
             })
             .catch(error => {
-                console.log(`The following error occurred while getting the conversion rate. ${error}`);
+                //console.log(`The following error occurred while getting the conversion rate. ${error}`);
                 toast('Rates not available. Connect to internet and try again.')
+            });
+    }
+
+    // Fetch and update currency exchange rates from API url
+    function apiFetchUpdatedExchangeRates(pair1, pair2) {
+        const url = `${exchangeRateAPI_URL}?q=${pair1},${pair2}&compact=ultra`;
+
+        fetch(url, {
+                cache: 'default',
+            })
+            .then(response => response.json())
+            .then(data => {
+                const exchangeRates = Object.values(data);
+
+                const oldConversionRate = numeral(convertInfo.innerText.split(" = ")[1]).value();
+
+                if (exchangeRates[0] === oldConversionRate) {
+                    console.log("Rates have not changed.")
+                } else {
+                    // Save updated currency exchange rate to IndexedDB for when user is offline
+                    saveCurrencyConversionRatetoIDB(pair1, exchangeRates[0]);
+                    saveCurrencyConversionRatetoIDB(pair2, exchangeRates[1]);
+
+                    //TODO: send values off to server
+
+                    setTimeOut(() => {
+                        calculateExchangeRate();
+                        toast("Rates updated.");
+                    }, 3000);
+                }
+            })
+            .catch(error => {
+                console.log(`The following error occurred while getting the conversion rate. ${error}`);
             });
     }
 
@@ -620,8 +735,10 @@
     // Calculate the exchange rate for selected currencies
     function calculateExchangeRate() {
         //clear current result
-        convertCurrencyToField.innerText = "";
-        convertInfo.innerText = "";
+        calculatorScreen.innerText = "";
+        newValue = "";
+        realNumber = "";
+        answer = 0;
 
         // remove `disabled` from base_currency_wrapper
         baseCurrencyWrapper.classList.remove('disabled');
@@ -654,22 +771,23 @@
             fetchDatafromIDB(currencyExchange).then(data => {
                 // state 1 : no
                 if (typeof data === 'undefined') {
-                    //if (navigator.onLine) {
-                    if (navigator.connection.type !== "none") {
-                        apiFetchExchangeRates(currencyExchange, currencyExchangePair);
-                    } else {
+                    // check if (navigator.onLine) {
+                    if ((navigator.connection.type === "none") || (window.navigator.onLine === false)) {
                         console.log('Rate is not available offline, turn on your data.');
-                        toast('Requested rate could not be loaded, retrying in background');
+                        toast('Failed loading rates, retrying in background');
 
-                        // retry after 10secs
-                        const retrial = setTimeout(() => {
-                            calculateExchangeRate();
-                        }, 10000);
+                        retrialTimeOut = retrialTimeOut + 10000
 
-                        document.addEventListener('online', () => {
-                            clearTimeout(retrial);
-                            calculateExchangeRate();
-                        })
+                        if (keypad.classList.contains('slideInUp')) {
+                            return;
+                        } else {
+                            // retry after multiple of 5secs
+                            setTimeout(() => {
+                                calculateExchangeRate();
+                            }, retrialTimeOut);
+                        }
+                    } else {
+                        apiFetchExchangeRates(currencyExchange, currencyExchangePair);
                     }
                 }
                 // state 2 : yes
@@ -680,6 +798,8 @@
                     convertInfo.innerText = `1 ${baseCurrency} = ${targetCurrency} ${data}`;
 
                     loader.classList.remove('show');
+
+                    apiFetchUpdatedExchangeRates(currencyExchange, currencyExchangePair);
                 }
             });
         }
