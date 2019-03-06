@@ -7,22 +7,22 @@
         return;
     }
 
-    let activated = false;
     let __this = '';
     let decimalTrigger = '';
     let initialValue = '';
     let currency_list_title_visible = true;
-    let defaultCountries = ['NGN', 'GHS', 'KES', 'GBP', 'XAF', 'CNY', 'JPY', 'EUR', 'XOF', 'ZAR'];
-    let retrialTimeOut = 0;
+    let defaultCountries = ['USD', 'NGN', 'GHS', 'KES', 'GBP', 'XAF', 'CNY', 'JPY', 'EUR', 'XOF', 'ZAR'];
+    let retrialTimeOut = 3000;
     let newValue = '';
     let realNumber = '';
     let answer = 0;
+    let activated = false;
     let memory = false;
 
     const idbName = "currenc";
-    const currenciesAPI_URL = 'https://free.currencyconverterapi.com/api/v5/currencies';
-    const exchangeRateAPI_URL = "https://free.currencyconverterapi.com/api/v5/convert";
-    const today = String(moment().format("MMMM D, YYYY"));
+    const currenciesAPI_URL = 'https://free.currencyconverterapi.com/api/v6/currencies?apiKey=656e06c7ed8fdabd8952';
+    const exchangeRateAPI_URL = 'https://free.currencyconverterapi.com/api/v6/convert?apiKey=656e06c7ed8fdabd8952';
+    const _now = String(moment().format("MMMM D, YYYY"));
 
     const header = document.querySelector('header');
     const currencyListContainer = document.querySelector('#currencies-list');
@@ -34,6 +34,7 @@
     const backButton = document.querySelector('.back__button');
     const closeButton = document.querySelector('.close__button');
     const searchButton = document.querySelector('.search__button');
+    const refreshButton = document.querySelector('.refresh__button');
     const searchField = document.querySelector('.search__field');
     const alphaKeyPadClose = document.querySelector('#search-field-wrapper .back__button');
     const numberKeyPad = document.querySelector('.number__keypad');
@@ -60,18 +61,18 @@
 
     const updateNetworkStatus = function() {
         if ((navigator.connection.type === "none") || (window.navigator.onLine === false)) {
-            //toast('You are now offline...');
             header.classList.add('app__offline');
+
+            if(typeof localStorage.first_run === "undefined") {
+                toast("No internet connection. Check your mobile data or Wi-Fi");
+            }
         } else {
             header.classList.remove('app__offline');
-            setInterval(() => {
-                calculateExchangeRate();
-            }, 1800000);
         }
     };
 
-    function onBackKeyDown() {
-        alert("going back");
+    function onBackKeyDown(e) {
+
     }
 
     const hideNativeKeyboard = function(el) {
@@ -118,19 +119,19 @@
     };
 
     const searchFilter = function(list = currencyList.querySelectorAll('.currency__list'), headers = currencyList.querySelectorAll('.currency_list_title')) {
-        // Loop through all list items, and hide those who don't match the search query
+        // Loop through all list items, and hide those who don'Array.prototype.forEach.call(headers, (el) => {
+        //                         el.classList.remove('hidden');
+        //
+        //                         // reset visibility of list headers
+        //                         currency_list_title_visible = true;
+        //                     });t match the search query
         for (let i = 0; i < list.length; i++) {
             const a = list[i].getElementsByTagName("a")[0];
             if (a.innerText.toUpperCase().indexOf(searchField.value.toUpperCase()) > -1) {
                 list[i].classList.remove('hidden');
 
                 if (searchField.value === '') {
-                    Array.prototype.forEach.call(headers, (el) => {
-                        el.classList.remove('hidden');
 
-                        // reset visibility of list headers
-                        currency_list_title_visible = true;
-                    });
                 }
             } else {
                 list[i].classList.add('hidden');
@@ -146,7 +147,7 @@
             }, 100);
             activated = false;
         });
-    }
+    };
 
     const triggeredOn = (els, r, a) => {
         Array.prototype.forEach.call(document.querySelectorAll(els), (el) => {
@@ -155,7 +156,7 @@
                 el.classList.add(a);
             }, 100);
         });
-    }
+    };
 
     const calculator = (n, op) => {
         switch (op) {
@@ -180,7 +181,7 @@
                 memory = true;
                 break;
         }
-    }
+    };
 
     const idbPromise = idb.open(idbName, 1, function(upgradeDB) {
         console.log("Making a new object store to hold currencies list of all countries.");
@@ -194,33 +195,45 @@
 
     // Methods
     function init() {
-        document.querySelector('.date data').innerHTML = today;
+        //const platform = (device === undefined) ? "android" : device.platform.toUpperCase();
 
-        updateNetworkStatus();
+        // add device platform as css rule to document body
+        //document.body.classList.add('is_' + platform.toLowerCase());
+
+        document.querySelector('.date data').innerHTML = _now;
+
+        loader.classList.add('show');
 
         fetchDatafromIDB('currencies').then(data => {
             if (typeof data === 'undefined') {
                 apiFetchCurrenciesList();
             } else {
+                addCurrencyListtoDOM(data.results);
+
                 const yesterday = data.date_log;
 
-                if (yesterday === today) {
-                    addCurrencyListtoDOM(data.results);
-                } else {
+                if (yesterday !== _now) {
                     apiFetchCurrenciesList();
                 }
             }
         });
 
-        calculateExchangeRate();
+        updateNetworkStatus();
+
+        initializeExchangeRates();
 
         customEventListeners();
+
+        calculateExchangeRate();
     }
 
     function customEventListeners() {
         // #base - add listener for click on base currency selection
         base.addEventListener('click', () => {
             currencyListContainer.classList.add('open');
+            currencyListContainer.addEventListener('animationend', el => {
+                el.target.classList.remove('hidden');
+            });
 
             __this = base;
         });
@@ -228,6 +241,9 @@
         // #converted - add listener for click on target currency selection
         converted.addEventListener('click', () => {
             currencyListContainer.classList.add('open');
+            currencyListContainer.addEventListener('animationend', el => {
+                el.target.classList.remove('hidden');
+            });
 
             __this = converted;
         });
@@ -268,13 +284,14 @@
                 }, 10);
 
                 currencyListContainer.classList.remove('open');
+
                 calculateExchangeRate();
             }
         });
 
         // #backButton - add listener for pointerdown on back__button on the currency list view
-        backButton.addEventListener('pointerdown', () => {
-            document.getElementById('currencies-list').classList.remove('open');
+        backButton.addEventListener('click', () => {
+            currencyListContainer.classList.remove('open');
         });
 
         // #searchButton - add listener for pointerdown on search__button on the currency list view
@@ -415,7 +432,7 @@
         // #inputField - show or hide cursor when inputField focus()
         inputField.addEventListener('focus', () => {
             hideNativeKeyboard(inputField);
-        })
+        });
 
         // #closeButton - add listener for pointerdown on close__button on the keypad view
         closeButton.addEventListener('pointerdown', () => {
@@ -432,6 +449,13 @@
 
                 calculateExchangeRate();
             }, 300);
+        });
+
+        // #refreshButton - add listener for pointerdown on button
+        refreshButton.addEventListener('pointerdown', e => {
+            e.target.classList.add('rotate');
+            apiFetchCurrenciesList(e.target);
+            calculateExchangeRate();
         });
 
         // #numberKeyPad - add listener for pointerdown on keypad keys
@@ -473,8 +497,8 @@
             }
 
             if (newValue.length > 15) {
+                // Maximum number of digits (12) exceeded;
                 navigator.vibrate([50]);
-                //toast("Maximum number of digits (12) exceeded");
             } else {
                 // construct new value to be added to DOM when a digit is deleted
                 if (event.target.children["0"].dataset.reset === 'delete') {
@@ -531,7 +555,7 @@
                     calculatorScreen.innerText = newValue;
                 }
 
-                console.log(inputField.value);
+                //console.log(inputField.value);
 
                 hideNativeKeyboard(inputField);
 
@@ -554,17 +578,19 @@
             calculateExchangeRate();
         });
 
-        document.addEventListener("backbutton", onBackKeyDown, false);
+        document.addEventListener("backbutton", onBackKeyDown(), false);
     }
 
     // Fetch currencies from API url
-    function apiFetchCurrenciesList() {
+    function apiFetchCurrenciesList(el) {
         fetch(currenciesAPI_URL, {
                 cache: 'default',
             })
             .then(response => response.json())
             .then(data => {
-                data.date_log = today; //new Date().setHours(0, 0, 0, 0);
+                if(el) el.classList.remove('rotate');
+
+                data.date_log = _now; //new Date().setHours(0, 0, 0, 0);
 
                 // Save currency list to IndexedDB for offline access
                 saveCurrenciesListtoIDB('currencies', data);
@@ -572,6 +598,8 @@
                 addCurrencyListtoDOM(data.results);
             })
             .catch(error => {
+                if(el) el.classList.remove('rotate');
+
                 console.error(
                     `The following error occurred while fetching the list of currencies. ${error}`
                 );
@@ -580,39 +608,76 @@
                 li.className = "currency_list_title";
                 li.innerHTML = "You are offline. Connect to internet."; */
 
-                currencyList.innerHTML = "<li>You are offline. Connect to internet.</li>";
-                //toast("You are offline. Connect to internet");
+                //currencyList.innerHTML = "<li>You are offline. Connect to internet.</li>";
             });
     }
 
-    // Fetch currency exchange rates from API url
-    function apiFetchExchangeRates(pair1, pair2) {
-        const url = `${exchangeRateAPI_URL}?q=${pair1},${pair2}&compact=ultra`;
+    /* function pairwise(list) {
+        if (list.length < 2) { return []; }
+        var first = list[0],
+            rest = list.slice(1),
+            pairs = rest.map(function(x) { return [first, x]; });
 
-        fetch(url, {
+        return pairs.concat(pairwise(rest));
+    } */
+
+    // Store regular currencies' exchange rates to IndexedDB
+    function initializeExchangeRates() {
+        let pairs = [];
+        for (const i in defaultCountries) {
+            const base = defaultCountries[i];
+
+            for (const j of defaultCountries) {
+                if (j !== base) {
+                    pairs.push(`${base}_${j}`);
+                }
+            }
+        }
+
+        // TODO: uncomment block when on paid API
+        /*const fetcher = setInterval(() => {
+            if(pairs.length){
+                console.log(pairs.splice(0,2).join());
+                apiFetchExchangeRates(pairs.splice(0,2).join());
+            } else {
+                clearInterval(fetcher);
+            }
+        }, 2000);*/
+
+        setInterval(() => {
+            calculateExchangeRate();
+        }, 900000);
+
+    }
+
+    // Fetch currency exchange rates from API url
+    function apiFetchExchangeRates(pair, callback=false) {
+        if(pair) {
+            const url = `${exchangeRateAPI_URL}&q=${pair}&compact=ultra`;
+
+            fetch(url, {
                 cache: 'default',
             })
-            .then(response => response.json())
-            .then(data => {
-                const exchangeRates = Object.values(data);
+                .then(response => response.json())
+                .then(data => {
+                    const exchangeRates = Object.values(data);
 
-                // Save currency exchange rate to IndexedDB for when user is offline
-                saveCurrencyConversionRatetoIDB(pair1, exchangeRates[0]);
-                saveCurrencyConversionRatetoIDB(pair2, exchangeRates[1]);
+                    // Save currency exchange rate to IndexedDB for when user is offline
+                    saveCurrencyConversionRatetoIDB(pair.split(",")[0], exchangeRates[0]);
+                    saveCurrencyConversionRatetoIDB(pair.split(",")[1], exchangeRates[1]);
 
-                //TODO: send values off to server
-
-                calculateExchangeRate();
-            })
-            .catch(error => {
-                //console.log(`The following error occurred while getting the conversion rate. ${error}`);
-                toast('Rates not available. Connect to internet and try again.')
-            });
+                    localStorage.app_ready = true;
+                    if (callback) calculateExchangeRate();
+                })
+                .catch(error => {
+                    //console.log(`The following error occurred while getting the conversion rate. ${error}`);
+                });
+        }
     }
 
     // Fetch and update currency exchange rates from API url
     function apiFetchUpdatedExchangeRates(pair1, pair2) {
-        const url = `${exchangeRateAPI_URL}?q=${pair1},${pair2}&compact=ultra`;
+        const url = `${exchangeRateAPI_URL}&q=${pair1},${pair2}&compact=ultra`;
 
         fetch(url, {
                 cache: 'default',
@@ -632,10 +697,8 @@
 
                     //TODO: send values off to server
 
-                    setTimeOut(() => {
-                        calculateExchangeRate();
-                        toast("Rates updated.");
-                    }, 3000);
+                    calculateExchangeRate();
+                    toast("Rates updated.");
                 }
             })
             .catch(error => {
@@ -688,6 +751,9 @@
 
     // Add currencies to DOM as an unordered list
     function addCurrencyListtoDOM(data) {
+        // initial cleanup list items
+        currencyList.innerHTML = "";
+
         // group data into alphabets on the `currencyName` key
         const result = Object.values(data).reduce((r, e) => {
             let group = e.currencyName[0];
@@ -760,6 +826,7 @@
 
         let convertedCurrency = '';
 
+        // if currencies selected are the same
         if (baseCurrency === targetCurrency) {
             convertedCurrency = amountToConvert * 1;
             convertCurrencyToField.innerText = numeral(convertedCurrency).format('0,0.00');
@@ -773,21 +840,21 @@
                 if (typeof data === 'undefined') {
                     // check if (navigator.onLine) {
                     if ((navigator.connection.type === "none") || (window.navigator.onLine === false)) {
-                        console.log('Rate is not available offline, turn on your data.');
-                        toast('Failed loading rates, retrying in background');
+                        //console.log('Rate is not available offline, turn on your data.');
+                        toast('Active internet connection needed to load rates for the first time.', 5000);
 
-                        retrialTimeOut = retrialTimeOut + 10000
+                        //retrialTimeOut = retrialTimeOut + 10000;
 
                         if (keypad.classList.contains('slideInUp')) {
                             return;
                         } else {
-                            // retry after multiple of 5secs
+                            // retry after multiple of 3secs
                             setTimeout(() => {
                                 calculateExchangeRate();
                             }, retrialTimeOut);
                         }
                     } else {
-                        apiFetchExchangeRates(currencyExchange, currencyExchangePair);
+                        apiFetchExchangeRates(`${currencyExchange}, ${currencyExchangePair}`, true);
                     }
                 }
                 // state 2 : yes
@@ -809,3 +876,5 @@
     document.addEventListener('deviceready', init(), false);
 
 })();
+
+//TODO: keep history of exchange rates

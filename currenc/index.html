@@ -17,7 +17,7 @@
     <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 
-<body>
+<body class="is_android">
     <div class="app">
         <div class="app__layout">
             <header>
@@ -28,6 +28,10 @@
                     CurrenC
                     <span class="date">Rates of: <data></data></span>
                 </h1>
+                <div class="refresh__button">
+                    <span class="top__angle"></span>
+                    <span class="bottom__angle"></span>
+                </div>
             </header>
 
             <div class="app__content">
@@ -39,7 +43,7 @@
                             </div>
                             <div id="input-wrapper" class="">
                                 <span class="entries"></span>
-                                <input type="text" id="convert-from" name="convert-from" value="100" class="pointer">
+                                <input type="text" id="convert-from" name="convert-from" value="100.00" class="pointer">
                                 <label class="absolute" for="convert-from">USD</label>
                             </div>
                         </div>
@@ -57,7 +61,7 @@
                     </div>
                 </div>
 
-                <div id="currencies-list">
+                <div id="currencies-list" class="hidden">
                     <div class="header">
                         <span class="back__button"></span>
                         <span class="header__title brand__color">Choose Currency</span>
@@ -211,6 +215,7 @@
     </div>
 
     <script src="cordova.js"></script>
+
     <script src="./js/idb.js"></script>
     <script src="./js/numeral.min.js"></script>
     <script src="./js/moment.min.js"></script>

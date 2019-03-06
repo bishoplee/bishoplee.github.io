@@ -90,16 +90,46 @@ body {
     font-family: 'Encode Sans Condensed', 'Source Sans Pro', Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 1rem;
     scroll-behavior: smooth;
-    background: var(--brand-color);
+    background: linear-gradient(180deg, #cf4647 55%, #fcf9fa 50%);
+    height: 100vh;
+}
+
+
+@media only screen and (max-width:319px) {
+    body.is_android .app__layout header,
+    body.is_android #keypad .header {height:76px;padding-top:20px;}
+    body.is_android #currencies-list .header,
+    body.is_android #currencies-list .search__wrapper {margin-top:25px;}
+    #switch-button {top:calc(50% + 64px);}
+    body.is_android .app__layout .app__content {padding-top:76px;}
+}
+
+@media only screen and (min-width:320px) and (max-width:479px) {
+    body.is_android .app__layout header,
+    body.is_android #keypad .header {height:81px;padding-top:25px;}
+    body.is_android #currencies-list .header,
+    body.is_android #currencies-list .search__wrapper {margin-top:30px;}
+    #switch-button {top:calc(50% + 64px);}
+    body.is_android .app__layout .app__content {padding-top:81px;}
+}
+
+@media only screen and (min-width:480px) {
+    body.is_android .app__layout header,
+    body.is_android #keypad .header {height:102px;padding-top:38px;}
+    body.is_android #currencies-list .header,
+    body.is_android #currencies-list .search__wrapper {margin-top:43px;}
+    #switch-button {top:calc(50% + 72px);}
+    body.is_android .app__layout .app__content {padding-top:102px;}
 }
 
 .app {
-    margin-top: 24px;
+    /* margin-top: 24px; */
+    /* display: none; */
 }
 
 .app__layout {
     width: 100%;
-    height: calc(100vh - 24px);
+    height: 100vh;
 }
 
 .brand__color {
@@ -113,7 +143,7 @@ body {
 }
 
 #base-currency-wrapper {
-    background: var(--brand-color);
+    /* background: var(--brand-color); */
     height: 50%;
     display: flex;
     flex-direction: column;
@@ -122,7 +152,7 @@ body {
 }
 
 #converted-currency-wrapper {
-    background: #fcf9fa;
+    /* background: #fcf9fa; */
     height: 50%;
 }
 
@@ -160,7 +190,7 @@ header {
     position: fixed;
     width: 100%;
     height: 56px;
-    top: 24px;
+    top: 0;
     background-color: var(--brand-color);
     display: flex;
     z-index: 100;
@@ -170,21 +200,23 @@ header {
 }
 
 #currencies-list {
-    transition: all 0.3s cubic-bezier(0, 0, 0.30, 1);
-    will-change: transform;
     position: fixed;
-    z-index: 300;
-    top: 24px;
+    z-index:300;
+    top:0;
     background: #fff5f6;
     transform: translateX(105%);
     height: 100%;
-    width: 100%;
-    /* opacity: 0; */
+    width: 100%;transition:transform 0.3s cubic-bezier(0, 0, 0.30, 1);
 }
 
 #currencies-list.open {
-    transform: translateX(0);
-    /* opacity: 1; */
+    will-change:transform;display: block!important;
+    transform:translateY(0);animation:open .3s ease;
+}
+
+@keyframes open {
+    0% { transform:translateX(105%); }
+    100% { transform:translateX(0); }
 }
 
 #currencies-list .header,
@@ -195,7 +227,7 @@ header {
     background: #fff;
     display: flex;
     z-index: 301;
-    top: 8px;
+    top:0;
     border-radius: 16px;
     padding: 0 8px;
     left: 2%;
@@ -411,13 +443,14 @@ header {
     left: 50%;
     transform: translateX(-50%);
     top: 0;
-    animation: move-up .25s ease-in;
+    animation: move-up .2s ease;
+    will-change:top;
     /* cubic-bezier(1, 0, 0.30, 1); */
 }
 
 @keyframes move-up {
     0% {
-        top: 100px;
+        top:81px;
     }
     100% {
         top: 0;
@@ -573,11 +606,10 @@ label {
 }
 
 .hidden {
-    display: none!important;
+    display:none!important;
 }
 
 #switch-button {
-    top: calc(50% + 56px);
     left: 50%;
     display: flex;
     width: 90px;
@@ -589,7 +621,7 @@ label {
     margin-top: -73px;
     margin-left: -45px;
     box-shadow: 0 0 15px 5px rgba(208, 70, 71, 0.25);
-    transition: all 0.5s ease;
+    transition: rotate 0.5s ease;
 }
 
 #switch-button.rotate {
@@ -618,9 +650,9 @@ label {
 #keypad .header {
     height: 64px;
     width: 100%;
-    padding: 8px;
+    padding: 0;
     position: fixed;
-    top: 24px;
+    top: 0;
     z-index: 401;
     overflow: hidden;
     text-align: right;
@@ -636,6 +668,7 @@ label {
     outline: none;
     padding: 0;
     justify-content: center;
+    margin: 4px;
 }
 
 #keypad .header .close__button svg,
@@ -747,7 +780,7 @@ svg .cls-1 {
 
 .slideInUp {
     display: block!important;
-    animation: slide-in-up .3s cubic-bezier(0, 0, 0.30, 1);
+    animation: slide-in-up .1s ease;will-change:opacity, margin-top;
 }
 
 @keyframes slide-in-up {
@@ -916,6 +949,22 @@ header svg {
     display: block;
     font-weight: 100;
     letter-spacing: .1rem;
+}
+
+.refresh__button{font-size:48px;width:48px!important;height:48px!important;margin: 4px 4px 4px auto!important;padding:0!important;text-align:center;display:flex;justify-content:center;align-items:center;cursor:pointer;}
+.refresh__button span.top__angle {pointer-events:none;width:8px;height:8px;transform:translateY(-8px) translateX(14px) rotate(-280deg);background:transparent;border: 2px solid #fff;border-left-color:transparent;border-bottom-color:transparent;}
+.refresh__button span.bottom__angle {pointer-events:none;width:20px;height:20px;background:transparent;border:2px solid #fff;border-radius:100%;border-right-style:dotted;transform: translateX(-4px);}
+
+.refresh__button.rotate {
+    -webkit-animation: sk-rotate 2s infinite linear;
+    animation: sk-rotate 2s infinite linear;
+}
+
+@keyframes sk-rotate {
+    100% {
+        transform: rotate(360deg);
+        -webkit-transform: rotate(360deg)
+    }
 }
 
 .app__content {
