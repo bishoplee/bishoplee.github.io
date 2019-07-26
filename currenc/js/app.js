@@ -498,7 +498,7 @@
 
     // Fetch currency exchange rates from API url
     function apiFetchExchangeRates(pair1, pair2) {
-        const url = `${exchangeRateAPI_URL}?q=${pair1},${pair2}&compact=ultra`;
+        const url = `${exchangeRateAPI_URL}&q=${pair1},${pair2}&compact=ultra`;
 
         fetch(url, {
                 cache: 'default',
