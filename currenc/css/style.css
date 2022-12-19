@@ -31,7 +31,7 @@
 }
 
 :root {
-    --cursor-position: 80px;
+    --cursor-position: 64px;
     --brand-color: #cf4647;
     --text-case: lowercase;
     --input-font-size: 60px;
@@ -90,46 +90,70 @@ body {
     font-family: 'Encode Sans Condensed', 'Source Sans Pro', Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 1rem;
     scroll-behavior: smooth;
-    background: linear-gradient(180deg, #cf4647 55%, #fcf9fa 50%);
+    /* background: linear-gradient(180deg, #cf4647 55%, #fcf9fa 50%); */
+    background: #fcf9fa;
     height: 100vh;
 }
 
-
 @media only screen and (max-width:319px) {
-    body.is_android .app__layout header,
-    body.is_android #keypad .header {height:76px;padding-top:20px;}
+    /* body.is_android .app__layout header,
+    body.is_android #keypad .header {
+        height: 76px;
+        padding-top: 20px;
+    }
     body.is_android #currencies-list .header,
-    body.is_android #currencies-list .search__wrapper {margin-top:25px;}
-    #switch-button {top:calc(50% + 64px);}
-    body.is_android .app__layout .app__content {padding-top:76px;}
+    body.is_android #currencies-list .search__wrapper {
+        margin-top: 25px;
+    }
+    #switch-button {
+        top: calc(50% + 64px);
+    }
+    body.is_android .app__layout .app__content {
+        padding-top: 76px;
+    } */
 }
 
 @media only screen and (min-width:320px) and (max-width:479px) {
-    body.is_android .app__layout header,
-    body.is_android #keypad .header {height:81px;padding-top:25px;}
+    /* body.is_android .app__layout header,
+    body.is_android #keypad .header {
+        height: 81px;
+        padding-top: 25px;
+    }
     body.is_android #currencies-list .header,
-    body.is_android #currencies-list .search__wrapper {margin-top:30px;}
-    #switch-button {top:calc(50% + 64px);}
-    body.is_android .app__layout .app__content {padding-top:81px;}
+    body.is_android #currencies-list .search__wrapper {
+        margin-top: 30px;
+    }
+    #switch-button {
+        top: calc(50% + 64px);
+    }
+    body.is_android .app__layout .app__content {
+        padding-top: 81px;
+    } */
 }
 
 @media only screen and (min-width:480px) {
-    body.is_android .app__layout header,
-    body.is_android #keypad .header {height:102px;padding-top:38px;}
+    /* body.is_android .app__layout header,
+    body.is_android #keypad .header {
+        height: 102px;
+        padding-top: 38px;
+    }
     body.is_android #currencies-list .header,
-    body.is_android #currencies-list .search__wrapper {margin-top:43px;}
-    #switch-button {top:calc(50% + 72px);}
-    body.is_android .app__layout .app__content {padding-top:102px;}
-}
-
-.app {
-    /* margin-top: 24px; */
-    /* display: none; */
+    body.is_android #currencies-list .search__wrapper {
+        margin-top: 43px;
+    }
+    #switch-button {
+        top: calc(50% + 72px);
+    }
+    body.is_android .app__layout .app__content {
+        padding-top: 102px;
+    } */
 }
 
 .app__layout {
     width: 100%;
     height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .brand__color {
@@ -143,7 +167,7 @@ body {
 }
 
 #base-currency-wrapper {
-    /* background: var(--brand-color); */
+    background: var(--brand-color);
     height: 50%;
     display: flex;
     flex-direction: column;
@@ -187,36 +211,44 @@ body {
 }
 
 header {
-    position: fixed;
+    /* position: fixed;top: 0; */
     width: 100%;
-    height: 56px;
-    top: 0;
+    height: 94px;
     background-color: var(--brand-color);
     display: flex;
     z-index: 100;
     color: #fff;
     user-select: none;
     transition: background-color 250ms linear;
+    padding-top: 38px;
 }
 
 #currencies-list {
     position: fixed;
-    z-index:300;
-    top:0;
+    z-index: 300;
+    top: 0;
     background: #fff5f6;
     transform: translateX(105%);
     height: 100%;
-    width: 100%;transition:transform 0.3s cubic-bezier(0, 0, 0.30, 1);
+    width: 100%;
+    transition: transform 0.3s cubic-bezier(0, 0, 0.30, 1);
+    padding-top: 112px;
 }
 
 #currencies-list.open {
-    will-change:transform;display: block!important;
-    transform:translateY(0);animation:open .3s ease;
+    will-change: transform;
+    display: block!important;
+    transform: translateY(0);
+    animation: open .3s ease;
 }
 
 @keyframes open {
-    0% { transform:translateX(105%); }
-    100% { transform:translateX(0); }
+    0% {
+        transform: translateX(105%);
+    }
+    100% {
+        transform: translateX(0);
+    }
 }
 
 #currencies-list .header,
@@ -224,14 +256,14 @@ header {
     height: 56px;
     position: fixed;
     width: 96%;
-    background: #fff;
     display: flex;
     z-index: 301;
-    top:0;
-    border-radius: 16px;
+    top: 54px;
     padding: 0 8px;
     left: 2%;
-    box-shadow: 0 0 15px -5px rgba(208, 70, 71, 0.9);
+    /*    border-radius: 16px;
+ background: #fff;
+    box-shadow: 0 0 15px -5px rgba(208, 70, 71, 0.9); */
 }
 
 #currencies-list .back__button {
@@ -241,6 +273,7 @@ header {
     display: block;
     cursor: pointer;
     z-index: 305;
+    margin-left: -12px;
 }
 
 #currencies-list .back__button::before {
@@ -303,24 +336,9 @@ header {
     z-index: 302;
 }
 
-#currencies-list .search__wrapper .search__field {
-    top: 0;
-    height: 100%;
-    width: 100%;
-    left: 0;
-    border: none;
-    background: transparent;
-    padding: 0 0 0 var(--cursor-position);
-    letter-spacing: 1px;
-    font-size: 18px;
-    color: #fff;
-    outline: none;
-    z-index: 303;
-}
-
 #currencies-list #search-field-wrapper {
     overflow: hidden;
-    border-radius: 16px;
+    border-radius: 8px;
     width: 100%;
     height: 100%;
     left: 0;
@@ -343,25 +361,30 @@ header {
     /*var(--xaxis) 50%;*/
 }
 
-#currencies-list #search-field-wrapper .search__field::placeholder {
-    color: #fff;
-    font-size: 18px;
-}
-
-#currencies-list #search-field-wrapper .caret {
+#currencies-list #search-field-wrapper .search__field {
     position: absolute;
+    font-size: 18px;
     color: #fff;
-    animation: blink 1s infinite;
+    animation: blink .5s step-end infinite alternate;
     top: 50%;
     left: var(--cursor-position);
     transform: translateY(-50%);
-    border-right: 1px solid #fff;
+    border-right: 3px solid #fff;
     display: inline-block;
-    width: 1px;
+    width: auto;
     height: 18px;
+    letter-spacing: 1px;
+    line-height: 1;
 }
 
 @keyframes blink {
+    50% {
+        border-color: transparent
+    }
+}
+
+
+/* @keyframes blink {
     0%,
     49.9%,
     100% {
@@ -371,14 +394,15 @@ header {
     100% {
         opacity: 1;
     }
-}
+} */
 
 #currencies-list ul.currencies {
     display: block;
     text-align: left;
-    padding: 80px 16px 40px;
+    padding: 8px 16px 76px;
     height: 100%;
     overflow-y: scroll;
+    scroll-behavior: smooth;
 }
 
 #currencies-list ul.currencies li {
@@ -442,15 +466,15 @@ header {
     z-index: 500;
     left: 50%;
     transform: translateX(-50%);
-    top: 0;
+    /* top: 0;
     animation: move-up .2s ease;
-    will-change:top;
+    will-change: top; */
     /* cubic-bezier(1, 0, 0.30, 1); */
 }
 
 @keyframes move-up {
     0% {
-        top:81px;
+        top: 81px;
     }
     100% {
         top: 0;
@@ -520,7 +544,7 @@ header {
     border-right: 2px solid #f9e0e1;
     border-bottom: 2px solid #f9e0e1;
     transform: rotate(45deg);
-    top: 21px;
+    top: 19px;
     right: 20px;
 }
 
@@ -577,7 +601,7 @@ label {
 }
 
 .app__offline {
-    background-color: #464a4c;
+    background-color: #464a4c!important;
     /* #1ab8ef;*/
 }
 
@@ -606,7 +630,7 @@ label {
 }
 
 .hidden {
-    display:none!important;
+    display: none!important;
 }
 
 #switch-button {
@@ -618,10 +642,10 @@ label {
     background: #fff;
     border-radius: 50%;
     z-index: 200;
-    margin-top: -73px;
-    margin-left: -45px;
-    box-shadow: 0 0 15px 5px rgba(208, 70, 71, 0.25);
+    top: 50%;
+    box-shadow: 0 0 15px 5px rgb(208 70 71 / 25%);
     transition: rotate 0.5s ease;
+    transform: translate(-50%, -50%);
 }
 
 #switch-button.rotate {
@@ -631,14 +655,14 @@ label {
 @keyframes rotate {
     100% {
         transform-origin: center;
-        transform: rotate(180deg);
+        transform: translate(-50%, -50%) rotate(180deg);
     }
 }
 
 #keypad {
-    height: calc(100% + 56px);
+    height: calc(100% + 48px);
     width: 100%;
-    top: -56px;
+    top: 0;
     background: var(--brand-color);
     z-index: 400;
     padding: 0 0 72px;
@@ -648,11 +672,11 @@ label {
 }
 
 #keypad .header {
-    height: 64px;
+    height: 56px;
     width: 100%;
     padding: 0;
     position: fixed;
-    top: 0;
+    top: 38px;
     z-index: 401;
     overflow: hidden;
     text-align: right;
@@ -664,11 +688,12 @@ label {
     display: inline-flex;
     cursor: pointer;
     border: none;
-    background: transparent;
+    background-color: var(--brand-color);
     outline: none;
     padding: 0;
     justify-content: center;
     margin: 4px;
+    align-items: center;
 }
 
 #keypad .header .close__button svg,
@@ -704,6 +729,7 @@ svg .cls-1 {
     transform: translateY(105%);
     will-change: transform;
     transition: transform 0.3s cubic-bezier(0, 0, 0.30, 1);
+    padding-bottom: 40px;
 }
 
 .reveal {
@@ -740,7 +766,9 @@ svg .cls-1 {
     align-items: center;
     display: flex;
     color: #fff;
-    font-size: 20px;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1;
 }
 
 #alphapad .key {
@@ -748,7 +776,7 @@ svg .cls-1 {
 }
 
 #do-conversion {
-    bottom: -20vh;
+    bottom: -94px;
     left: 50%;
     transform: translateX(-50%);
     width: 80px;
@@ -780,7 +808,8 @@ svg .cls-1 {
 
 .slideInUp {
     display: block!important;
-    animation: slide-in-up .1s ease;will-change:opacity, margin-top;
+    animation: slide-in-up .1s ease;
+    will-change: opacity, margin-top;
 }
 
 @keyframes slide-in-up {
@@ -800,7 +829,7 @@ svg .cls-1 {
     grid-template-columns: auto auto auto auto auto;
     padding: 0 8px 0;
     height: 40vh;
-    margin: 280px auto 0;
+    margin: 224px auto 0;
     max-width: 400px;
 }
 
@@ -951,9 +980,40 @@ header svg {
     letter-spacing: .1rem;
 }
 
-.refresh__button{font-size:48px;width:48px!important;height:48px!important;margin: 4px 4px 4px auto!important;padding:0!important;text-align:center;display:flex;justify-content:center;align-items:center;cursor:pointer;}
-.refresh__button span.top__angle {pointer-events:none;width:8px;height:8px;transform:translateY(-8px) translateX(14px) rotate(-280deg);background:transparent;border: 2px solid #fff;border-left-color:transparent;border-bottom-color:transparent;}
-.refresh__button span.bottom__angle {pointer-events:none;width:20px;height:20px;background:transparent;border:2px solid #fff;border-radius:100%;border-right-style:dotted;transform: translateX(-4px);}
+.refresh__button {
+    font-size: 48px;
+    width: 48px!important;
+    height: 48px!important;
+    margin: 4px 4px 4px auto!important;
+    padding: 0!important;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.refresh__button span.top__angle {
+    pointer-events: none;
+    width: 8px;
+    height: 8px;
+    transform: translateY(-8px) translateX(14px) rotate(-280deg);
+    background: transparent;
+    border: 2px solid #fff;
+    border-left-color: transparent;
+    border-bottom-color: transparent;
+}
+
+.refresh__button span.bottom__angle {
+    pointer-events: none;
+    width: 20px;
+    height: 20px;
+    background: transparent;
+    border: 2px solid #fff;
+    border-radius: 100%;
+    border-right-style: dotted;
+    transform: translateX(-4px);
+}
 
 .refresh__button.rotate {
     -webkit-animation: sk-rotate 2s infinite linear;
@@ -969,20 +1029,23 @@ header svg {
 
 .app__content {
     min-width: 320px;
-    height: 100%;
-    padding-top: 56px;
+    flex-grow: 1;
+    margin-bottom: 48px;
+    /* padding-left: env(safe-area-inset-left); */
 }
 
 .toast__container {
+    width: calc(100vw - 40px);
+    max-width: 420px;
     position: fixed;
-    bottom: 20px;
+    bottom: 64px;
     left: 20px;
     pointer-events: none;
     z-index: 1000;
 }
 
 .toast__msg {
-    width: 250px;
+    width: 100%;
     font-family: sans-serif;
     min-height: 50px;
     background: rgba(0, 0, 0, 0.9);
@@ -1008,7 +1071,7 @@ header svg {
 
 /*  Ripple */
 
-.close__button:after {
+.close__button::after {
     content: '';
     display: block;
     position: absolute;
@@ -1025,12 +1088,12 @@ header svg {
     visibility: hidden;
 }
 
-.close__button:focus:after {
+.close__button:focus::after {
     visibility: visible;
 }
 
-.close__button:focus:after,
-.close__button:not(:active):after {
+.close__button:focus::after,
+.close__button:not(:active)::after {
     animation: ripple 1s ease-out;
 }
 
@@ -1052,7 +1115,6 @@ header svg {
 
 @media screen and (max-width: 320px) {
      :root {
-        --cursor-position: 60px;
         --input-font-size: 50px;
     }
     .header__title {
@@ -1070,7 +1132,7 @@ header svg {
     }
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 340px) {
     .header__title {
         font-size: 20px;
     }
